@@ -9,7 +9,7 @@ const categoryController = {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  },
+  },//to the node moon
 
   getCategoryById: async (req, res) => {
     try {
