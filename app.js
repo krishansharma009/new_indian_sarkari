@@ -72,7 +72,7 @@ app.use((req, res, next) => {
 // Route: Home
 app.get("/", (req, res) => {
   logger.debug("Visited home page");
-  res.send("Hello World!");
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // Error handling middleware (Combined)
