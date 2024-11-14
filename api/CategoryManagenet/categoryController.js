@@ -33,27 +33,27 @@ const categoryController = {
     }
   },
 
-//   updateCategory: async (req, res) => {
-//     try {
-//       const response = await REST_API.update(Category, req.params.id, req.body);
-//       res.status(201).json(response);
-//     } catch (error) {
-//       res.status(404).json({ error: error.message });
-//     }
-//   },
+  //   updateCategory: async (req, res) => {
+  //     try {
+  //       const response = await REST_API.update(Category, req.params.id, req.body);
+  //       res.status(201).json(response);
+  //     } catch (error) {
+  //       res.status(404).json({ error: error.message });
+  //     }
+  //   },
 
-              updateCategory: async (req, res) => {
-      try {
-          await REST_API.update(Category, req.params.id, req.body);
-          const updatedCategory = await Category.findByPk(req.params.id);
-          if (updatedCategory) {
-              res.json(updatedCategory);
-          } else {
-              res.status(404).json({ error: "Category not found" });
-          }
-      } catch (error) {
-          res.status(500).json({ error: error.message });
+  updateCategory: async (req, res) => {
+    try {
+      await REST_API.update(Category, req.params.id, req.body);
+      const updatedCategory = await Category.findByPk(req.params.id);
+      if (updatedCategory) {
+        res.json(updatedCategory);
+      } else {
+        res.status(404).json({ error: "Category not found" });
       }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   },
 
   deleteCategory: async (req, res) => {
