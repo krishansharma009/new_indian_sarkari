@@ -47,7 +47,8 @@ JobUpdate.init(
 );
 
 // Add the cascade delete behavior
-//Job.hasMany(JobUpdate, { foreignKey: "job_id", onDelete: "CASCADE" });
+// Add the cascade delete behavior
+Job.hasMany(JobUpdate, { foreignKey: "job_id", onDelete: "CASCADE" });
 JobUpdate.belongsTo(Job, { foreignKey: "job_id" });
 
 module.exports = JobUpdate;

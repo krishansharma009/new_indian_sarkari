@@ -62,15 +62,6 @@ Job.init(
     content: {
       type: DataTypes.TEXT("long"),
       allowNull: true,
-      set(value) {
-        this.setDataValue(
-          "content",
-          sanitizeHtml(value, {
-            allowedTags: [], // Define your allowed tags like <h1>,<p> etc
-            allowedAttributes: {}, // Define your allowed attributes class,*,
-          })
-        );
-      },
     },
     admit_card_link: DataTypes.STRING(255),
     answer_key_link: DataTypes.STRING(255),
