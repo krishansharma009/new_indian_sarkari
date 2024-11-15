@@ -1,6 +1,12 @@
 const REST_API = require("../../utils/curdHelper");
 const JobUpdate = require("./job-update");
 const Job = require("../jobmanagement/job");
+
+const Category = require("../CategoryManagenet/categoryModel");
+const Depertment = require("../DepartmentManagement/depertment");
+const JobSEO = require("../SEOmanagement/JobSeo");
+const State = require("../StateManagement/state");
+const Subcategory = require("../SubcategoryManagement/subcategory");
 // const { Op } = require("sequelize");
 
 const JobUpdateController = {
@@ -71,7 +77,14 @@ const JobUpdateController = {
       const result = await JobUpdate.findAll({
         where: { update_type: "admit_card" },
         order: [["update_date", "DESC"]],
-        include: [{ model: Job }],
+        include: [
+          {model: Job},
+          { model: Category },
+          { model: Depertment },
+          { model: JobSEO },
+          { model: State },
+          { model: Subcategory },
+        ],
         limit: 10, // Adjust the limit as needed
       });
       res.json(result);
@@ -86,7 +99,14 @@ const JobUpdateController = {
         where: { update_type: "answer_key" },
         order: [["update_date", "DESC"]],
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
-        include: [{ model: Job }],
+        include: [
+          { model: Job },
+          { model: Category },
+          { model: Depertment },
+          { model: JobSEO },
+          { model: State },
+          { model: Subcategory },
+        ],
         limit: 10, // Adjust the limit as needed
       });
       res.json(result);
@@ -101,7 +121,14 @@ const JobUpdateController = {
         where: { update_type: "result" },
         order: [["update_date", "DESC"]],
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
-        include: [{ model: Job }],
+        include: [
+          { model: Job },
+          { model: Category },
+          { model: Depertment },
+          { model: JobSEO },
+          { model: State },
+          { model: Subcategory },
+        ],
         limit: 10, // Adjust the limit as needed
       });
       res.json(result);
