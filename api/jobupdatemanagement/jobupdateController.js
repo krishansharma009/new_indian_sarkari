@@ -35,6 +35,12 @@ const JobUpdateController = {
 
   createJobUpdate: async (req, res) => {
     try {
+      const job=await Job.findOne({where:{id:req.body.job_id}});
+      req.body.category_id=job.category_id;
+      req.body.jobSeo_id = job.jobSeo_id;
+      req.body.state_id = job.state_id;
+      req.body.subcategory_id = job.subcategory_id;
+      req.body.department_id = job.department_id;
       const result = await REST_API.create(JobUpdate, req.body);
       res.status(201).json(result);
     } catch (error) {
@@ -74,19 +80,20 @@ const JobUpdateController = {
 
   getAdmitCards: async (req, res) => {
     try {
-      const result = await JobUpdate.findAll({
+
+      const condition = {
         where: { update_type: "admit_card" },
         order: [["update_date", "DESC"]],
         include: [
-          {model: Job},
+          { model: Job },
           { model: Category },
           { model: Depertment },
           { model: JobSEO },
           { model: State },
           { model: Subcategory },
         ],
-        limit: 10, // Adjust the limit as needed
-      });
+      };
+      const result = await REST_API.getAll(JobUpdate,req.query, condition);
       res.json(result);
     } catch (error) {
       res.status(500).json({ error: error.message });

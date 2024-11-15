@@ -25,6 +25,41 @@ JobUpdate.init(
         key: "id",
       },
     },
+    category_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "categories",
+        key: "id",
+      },
+    },
+    jobSeo_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "jobseos",
+        key: "id",
+      },
+    },
+    state_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "states",
+        key: "id",
+      },
+    },
+    subcategory_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "subcategorys", // corrected spelling
+        key: "id",
+      },
+    },
+    department_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "depertments", // corrected spelling
+        key: "id",
+      },
+    },
     update_type: {
       type: DataTypes.ENUM("admit_card", "answer_key", "result", "other"),
       allowNull: false,
@@ -33,7 +68,7 @@ JobUpdate.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    
+
     update_date: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
