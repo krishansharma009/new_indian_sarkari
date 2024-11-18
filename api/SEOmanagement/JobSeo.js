@@ -52,6 +52,6 @@ JobSEO.init(
 );
 
 // JobSEO.belongsTo(Job, { foreignKey: "job_id" });
-
+//ramdev
 
 module.exports = JobSEO;
