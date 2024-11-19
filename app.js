@@ -23,6 +23,7 @@ const jobRouter = require("./api/jobmanagement/jobRoute");
 const jobupdateRouter = require("./api/jobupdatemanagement/jobupdateRoute");
 const jobSeoRouter = require("./api/SEOmanagement/jobSeoRoute");
 const admissionRouter = require("./api/goverment_admissilns/adissionRoute");
+const updateAdmissionRouter = require("./api/admissionUpdate/updateAdmissionRout");
 
 //testserize management
 
@@ -94,12 +95,14 @@ app.use("/depertment", depertmentRoute);
 app.use("/job", jobRouter);
 app.use("/jobupdate", jobupdateRouter);
 app.use("/seo", jobSeoRouter);
+app.use("/admission", admissionRouter);
+app.use("/upadmis", updateAdmissionRouter);
 
 
 //testserize route
 app.use("/testCat", testCategoryRouter);
 app.use("/testSeries", testSeriesRouter);
-app.use("/admission", admissionRouter);
+
 
 // Error handling middleware
 app.use(errorHandler);
