@@ -109,8 +109,8 @@ const AdmissionUpdateController = {
 
   getUniversities: async (req, res) => {
     try {
-      const result = await AdmissionUpdate.findAll({
-        where: { update_type: "universities" },
+      const condition={
+         where: { update_type: "universities" },
         order: [["update_date", "DESC"]],
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
         include: [
@@ -120,19 +120,43 @@ const AdmissionUpdateController = {
           { model: JobSEO },
           { model: State },
           { model: Subcategory },
-        ],
-        limit: 10, // Adjust the limit as needed
-      });
+        ]
+      }
+      
+      const result = await REST_API.getAll(AdmissionUpdate, req.query, condition);
       res.json(result);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
 
+  // getColleges: async (req, res) => {
+  //   try {
+  //     const result = await AdmissionUpdate.findAll({
+  //       where: { update_type: "result" },
+  //       order: [["update_date", "DESC"]],
+  //       // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
+  //       include: [
+  //         { model: Admission },
+  //         { model: Category },
+  //         { model: Depertment },
+  //         { model: JobSEO },
+  //         { model: State },
+  //         { model: Subcategory },
+  //       ],
+  //       limit: 10, // Adjust the limit as needed
+  //     });
+  //     res.json(result);
+  //   } catch (error) {
+  //     res.status(500).json({ error: error.message });
+  //   }
+  // },
+
   getColleges: async (req, res) => {
     try {
-      const result = await AdmissionUpdate.findAll({
-        where: { update_type: "result" },
+
+      const condition={
+        where: { update_type: "colleges" },
         order: [["update_date", "DESC"]],
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
         include: [
@@ -142,14 +166,16 @@ const AdmissionUpdateController = {
           { model: JobSEO },
           { model: State },
           { model: Subcategory },
-        ],
-        limit: 10, // Adjust the limit as needed
-      });
+        ]
+      }
+      const result = await REST_API.getAll(AdmissionUpdate, req.query, condition);
       res.json(result);
     } catch (error) {
       res.status(500).json({ error: error.message });
-    }
-  },
+    
+      },
+};
+
 };
 
 module.exports = AdmissionUpdateController;
