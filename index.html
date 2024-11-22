@@ -49,15 +49,17 @@
     </style>
   </head>
   <body>
-    <h2>aapna bhai gully</h2>
-    <canvas id="matrix" width="800" height="600"></canvas>
+    <h2>aapna bhai GULGUL.COM</h2>
+    <canvas id="matrix"></canvas>
 
     <script>
       const canvas = document.getElementById("matrix");
       const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
 
       const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%";
-      const matrix = letters.split("");
+      const matrix = letters.split('');
 
       const fontSize = 16;
       const columns = canvas.width / fontSize;
@@ -82,6 +84,13 @@
       }
 
       setInterval(draw, 33);
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+       drops.length = Math.floor(canvas.width / fontSize);
+       drops.fill(1);
+      });
     </script>
   </body>
 </html>
