@@ -35,7 +35,9 @@ const AdmissionUpdateController = {
 
   createAdmissionUpdate: async (req, res) => {
     try {
-      const job = await Admission.findOne({ where: { id: req.body.admission_id } });
+      const job = await Admission.findOne({
+        where: { id: req.body.admission_id },
+      });
       req.body.category_id = job.category_id;
       req.body.jobSeo_id = job.jobSeo_id;
       req.body.state_id = job.state_id;
@@ -109,8 +111,8 @@ const AdmissionUpdateController = {
 
   getUniversities: async (req, res) => {
     try {
-      const condition={
-         where: { update_type: "universities" },
+      const condition = {
+        where: { update_type: "universities" },
         order: [["update_date", "DESC"]],
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
         include: [
@@ -120,10 +122,14 @@ const AdmissionUpdateController = {
           { model: JobSEO },
           { model: State },
           { model: Subcategory },
-        ]
-      }
-      
-      const result = await REST_API.getAll(AdmissionUpdate, req.query, condition);
+        ],
+      };
+
+      const result = await REST_API.getAll(
+        AdmissionUpdate,
+        req.query,
+        condition
+      );
       res.json(result);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -154,9 +160,8 @@ const AdmissionUpdateController = {
 
   getColleges: async (req, res) => {
     try {
-
-      const condition={
-        where: { update_type: "colleges" },
+      const condition = {
+        where: { update_type: "college" },
         order: [["update_date", "DESC"]],
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
         include: [
@@ -166,17 +171,18 @@ const AdmissionUpdateController = {
           { model: JobSEO },
           { model: State },
           { model: Subcategory },
-        ]
-      }
-      const result = await REST_API.getAll(AdmissionUpdate, req.query, condition);
+        ],
+      };
+      const result = await REST_API.getAll(
+        AdmissionUpdate,
+        req.query,
+        condition
+      );
       res.json(result);
     } catch (error) {
       res.status(500).json({ error: error.message });
-      }
-}
-
+    }
+  },
 };
 
 module.exports = AdmissionUpdateController;
-
-
