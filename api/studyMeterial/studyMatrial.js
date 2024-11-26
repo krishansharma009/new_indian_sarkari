@@ -218,4 +218,8 @@ FileUpload.belongsTo(Category, {
   foreignKey: "category_id",
   onDelete: "SET NULL",
 });
+Category.hasMany(FileUpload, {
+  foreignKey: "category_id",
+  onDelete: "SET NULL",
+});
 module.exports = FileUpload;
