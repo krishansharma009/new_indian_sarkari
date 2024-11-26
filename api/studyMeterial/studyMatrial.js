@@ -97,7 +97,6 @@ FileUpload.init(
     },
     category_id: {
       type: DataTypes.INTEGER,
-      allowNull: true, // Allow category_id to be NULL
       references: {
         model: "categories",
         key: "id",
