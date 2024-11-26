@@ -59,7 +59,7 @@ class FileUpload extends Model {
 FileUpload.init(
   {
     id: {
-      type:DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
@@ -96,15 +96,16 @@ FileUpload.init(
       },
     },
     category_id: {
-  type: DataTypes.INTEGER,
-  allowNull: true,  // Allow category_id to be NULL
-  references: {
-    model: 'categories',
-    key: 'id',
-  },
-  onDelete: 'SET NULL',  // Set category_id to NULL on category deletion
-  onUpdate: 'CASCADE',
-},
+      type: DataTypes.INTEGER,
+      allowNull: true, // Allow category_id to be NULL
+      references: {
+        model: "categories",
+        key: "id",
+      },
+      onDelete: "SET NULL", // Set category_id to NULL on category deletion
+      onUpdate: "CASCADE",
+    },
+
     uploadType: {
       type: DataTypes.ENUM(
         "VideoClasses",
