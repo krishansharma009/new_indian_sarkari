@@ -1,7 +1,7 @@
 const FileUpload = require("./studyMatrial");
 const REST_API = require("../../utils/curdHelper");
 const FileUploadHelper = require("../../utils/fileUpload.helper");
-const Category = require("../CategoryManagenet/categoryModel");
+// const Category = require("../CategoryManagenet/categoryModel");
 
 const FileUploadController = {
   // Create new file upload
@@ -15,7 +15,6 @@ const FileUploadController = {
         accessType,
         fileUrl,
         seoTools,
-        category_id,
       } = req.body;
 
       let filePath = null;
@@ -32,7 +31,6 @@ const FileUploadController = {
         fileUrl: fileUrl || null,
         filePath,
         seoTools,
-        category_id,
       };
 
       const result = await REST_API.create(FileUpload, fileData);
@@ -54,7 +52,6 @@ const FileUploadController = {
         accessType,
         fileUrl,
         seoTools,
-        category_id,
       } = req.body;
 
       // Find existing record
@@ -86,7 +83,6 @@ const FileUploadController = {
         fileUrl: fileUrl || null,
         filePath,
         seoTools,
-        category_id,
       };
 
       const result = await REST_API.update(FileUpload, id, updateData);
