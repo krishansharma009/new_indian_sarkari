@@ -1,7 +1,7 @@
 
 const {DataTypes, Model} = require("sequelize");
 const sequelize = require("../../config/datasource-db");
-// const Category = require("../CategoryManagenet/categoryModel");
+const Category = require("../CategoryManagenet/categoryModel");
 
 class FileUpload extends Model {
   // Class method to define associations
@@ -94,15 +94,15 @@ FileUpload.init(
         },
       },
     },
-    // category_id: {
-    //   type: DataTypes.INTEGER,
-    //   references: {
-    //     model: "categories",
-    //     key: "id",
-    //   },
-    //   onDelete: "SET NULL", // Set category_id to NULL on category deletion
-    //   onUpdate: "CASCADE",
-    // },
+    category_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "categories",
+        key: "id",
+      },
+      onDelete: "SET NULL", // Set category_id to NULL on category deletion
+      onUpdate: "CASCADE",
+    },
 
     uploadType: {
       type: DataTypes.ENUM(
@@ -214,8 +214,8 @@ FileUpload.searchFiles = async function (options = {}) {
     order: [["createdAt", "DESC"]],
   });
 };
-// FileUpload.belongsTo(Category, {
-//   foreignKey: "category_id",
-//   onDelete: "SET NULL",
-// });
+FileUpload.belongsTo(Category, {
+  foreignKey: "category_id",
+  onDelete: "SET NULL",
+});
 module.exports = FileUpload;
