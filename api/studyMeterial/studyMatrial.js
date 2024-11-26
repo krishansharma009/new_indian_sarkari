@@ -95,13 +95,15 @@ FileUpload.init(
       },
     },
     category_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: "categories",
-        key: "id",
-      },
-    },
+  type: Sequelize.INTEGER,
+  allowNull: true,  // Allow category_id to be NULL
+  references: {
+    model: 'categories',
+    key: 'id',
+  },
+  onDelete: 'SET NULL',  // Set category_id to NULL on category deletion
+  onUpdate: 'CASCADE',
+},
     uploadType: {
       type: DataTypes.ENUM(
         "VideoClasses",
