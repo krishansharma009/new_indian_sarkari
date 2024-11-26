@@ -1,5 +1,6 @@
 
-const { Model, DataTypes } = require("sequelize");
+const { Model } = require("sequelize");
+const {DataTypes}=require('sequelize');
 const sequelize = require("../../config/datasource-db");
 const Category = require("../../api/CategoryManagenet/categoryModel");
 
@@ -58,7 +59,7 @@ class FileUpload extends Model {
 FileUpload.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type:DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
@@ -95,7 +96,7 @@ FileUpload.init(
       },
     },
     category_id: {
-  type: Sequelize.INTEGER,
+  type: DataTypes.INTEGER,
   allowNull: true,  // Allow category_id to be NULL
   references: {
     model: 'categories',
