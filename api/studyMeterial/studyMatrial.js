@@ -2,7 +2,7 @@
 const { Model } = require("sequelize");
 const {DataTypes}=require('sequelize');
 const sequelize = require("../../config/datasource-db");
-const Category = require("../../api/CategoryManagenet/categoryModel");
+const Category = require("../CategoryManagenet/categoryModel");
 
 class FileUpload extends Model {
   // Class method to define associations
