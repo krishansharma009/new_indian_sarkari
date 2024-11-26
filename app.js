@@ -24,6 +24,7 @@ const jobupdateRouter = require("./api/jobupdatemanagement/jobupdateRoute");
 const jobSeoRouter = require("./api/SEOmanagement/jobSeoRoute");
 const admissionRouter = require("./api/goverment_admissilns/adissionRoute");
 const updateAdmissionRouter = require("./api/admissionUpdate/updateAdmissionRout");
+const fileUploadRouter = require("./api/studyMeterial/fileUpload.routes");
 
 //testserize management
 
@@ -97,6 +98,7 @@ app.use("/jobupdate", jobupdateRouter);
 app.use("/seo", jobSeoRouter);
 app.use("/admission", admissionRouter);
 app.use("/upadmis", updateAdmissionRouter);
+app.use("/fileUpload", fileUploadRouter);
 
 
 //testserize route
