@@ -178,7 +178,7 @@ const FileUploadController = {
       });
 
       // Prepare response
-      res.json({ files });
+      res.json({ rows:files });
     } catch (error) {
       res.status(500).json({ 
         message: 'Error fetching files',
