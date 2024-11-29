@@ -20,8 +20,11 @@ const FileUploadController = {
 
       let filePath = null;
       if (req.file) {
-        filePath = req.file.path;
+        // filePath = req.file.path;
+        // Extract only the relative path
+        filePath = req.file.path.replace(/^.*uploads[\\\/]/, "/uploads/");
       }
+
 
       const fileData = {
         title,
@@ -74,7 +77,9 @@ const FileUploadController = {
             req.file.path
           );
         }
-        filePath = req.file.path;
+        // filePath = req.file.path;
+        // Extract only the relative path
+        filePath = req.file.path.replace(/^.*uploads[\\\/]/, "/uploads/");
       }
 
       const updateData = {
