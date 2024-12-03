@@ -1,0 +1,68 @@
+ body {
+        margin: 0;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: black;
+        color: #0f0;
+        font-family: "Courier New", Courier, monospace;
+      }
+
+      /* h2 {
+        font-size: 3rem;
+        animation: pulse 2s infinite;
+        z-index: 1;
+        color: #00ff00;
+        text-shadow: 0 0 10px #00ff00;
+        position: absolute;
+      } */
+
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+h2 {
+  font-size: 3rem;
+  animation: pulse 2s infinite, gradientAnimation 3s linear infinite;
+  z-index: 1;
+  color: transparent;
+  background-image: linear-gradient(90deg, #ff0000, #00ff00, #0000ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: absolute;
+  background-size: 300%; /* Make the gradient longer for smooth animation */
+}
+
+
+
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
