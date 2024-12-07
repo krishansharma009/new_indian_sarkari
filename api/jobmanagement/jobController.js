@@ -137,25 +137,32 @@ const JobController = {
   //   }
   // },
 
-  createJob: async (req, res) => {
-    try {
-      const categoryIds = req.body.category_id.join(",");
+createJob: async (req, res) => {
+  try {
+    // Ensure category_id is passed as an array
+    const categoryIds = Array.isArray(req.body.category_id) ? req.body.category_id : [req.body.category_id];
 
-      const slug = await generateUniqueSlug(Job, req.body.title);
+    // Generate the unique slug for the job title
+    const slug = await generateUniqueSlug(Job, req.body.title);
 
-      const jobData = {
-        ...req.body,
-        category_id: categoryIds,
-        slug,
-      };
+    // Prepare job data, passing categoryIds as a JSON array
+    const jobData = {
+      ...req.body,
+      category_id: categoryIds,  // category_id should be an array (JSON format)
+      slug,
+    };
 
-      const result = await REST_API.create(Job, jobData);
-      res.status(201).json(result);
-    } catch (error) {
-      console.error("Job creation error:", error);
-      res.status(500).json({ error: error.message });
-    }
-  },
+    // Create the job in the database
+    const result = await REST_API.create(Job, jobData);
+    
+    // Respond with the created job
+    res.status(201).json(result);
+  } catch (error) {
+    console.error("Job creation error:", error);
+    res.status(500).json({ error: error.message });
+  }
+},
+
 
   updateJob: async (req, res) => {
     try {
