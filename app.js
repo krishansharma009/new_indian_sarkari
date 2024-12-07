@@ -134,4 +134,5 @@ sequelize
   .catch((err) => {
     console.error("Error syncing database:", err);
     logger.error("Error syncing database:", err);
+    process.exit(1);
   });
