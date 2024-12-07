@@ -23,7 +23,7 @@ Job.init(
       allowNull: false,
     },
     category_id: {
-      type: DataTypes.ARRAY,
+      type: DataTypes.JSON,
       references: {
         model: "categories",
         key: "id",
@@ -31,7 +31,7 @@ Job.init(
     },
 
     jobSeo_id: {
-      type: DataTypes.ARRAY,
+      type: DataTypes.JSON,
       references: {
         model: "jobseos",
         key: "id",
@@ -39,21 +39,21 @@ Job.init(
     },
 
     state_id: {
-      type: DataTypes.ARRAY,
+      type: DataTypes.JSON,
       references: {
         model: "states",
         key: "id",
       },
     },
     subcategory_id: {
-      type: DataTypes.ARRAY,
+      type: DataTypes.JSON,
       references: {
         model: "subcategorys", // corrected spelling
         key: "id",
       },
     },
     department_id: {
-      type: DataTypes.ARRAY,
+      type: DataTypes.JSON,
       references: {
         model: "depertments", // corrected spelling
         key: "id",
