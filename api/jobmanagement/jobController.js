@@ -89,29 +89,86 @@ const JobController = {
     }
   },
 
-  // createJob: async (req, res) => {
-  //   try {
+  createJob: async (req, res) => {
+    try {
+      // Check if all required fields are present
+      const {
+        category_id,
+        state_id,
+        subcategory_id,
+        department_id,
+        title,
+        description,
+      } = req.body;
 
-  //     const categorydata = await Category.findOne({
-  //       where: { id: req.body.category_id },
-  //     });
-  //     const data=req.body.category_id;
-  //     req.body.category_id = JSON.parse(data);
+      // Check if the required fields are not empty
+      if (
+        !category_id ||
+        !Array.isArray(category_id) ||
+        category_id.length === 0
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Category is required and should be an array." });
+      }
+      if (!state_id || !Array.isArray(state_id) || state_id.length === 0) {
+        return res
+          .status(400)
+          .json({ error: "State is required and should be an array." });
+      }
+      if (
+        !subcategory_id ||
+        !Array.isArray(subcategory_id) ||
+        subcategory_id.length === 0
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Subcategory is required and should be an array." });
+      }
+      if (
+        !department_id ||
+        !Array.isArray(department_id) ||
+        department_id.length === 0
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Department is required and should be an array." });
+      }
+      if (!title || !description) {
+        return res
+          .status(400)
+          .json({ error: "Title and description are required." });
+      }
 
-  //     console.log(categorydata);
+      // Fetch category data to generate slug
+      const categorydata = await Category.findOne({
+        where: { id: category_id[0] }, // Using the first category for slug generation
+      });
 
-  //     const slug = await generateUniqueSlug(
-  //       Job,
-  //       req.body.title,
-  //       categorydata.name
-  //     );
-  //     const jobData = { ...req.body, slug };
-  //     const result = await REST_API.create(Job, jobData);
-  //     res.status(201).json(result);
-  //   } catch (error) {
-  //     res.status(400).json({ error: error.message });
-  //   }
-  // },
+      if (!categorydata) {
+        return res.status(400).json({ error: "Category not found." });
+      }
+
+      console.log("Category Data:", categorydata);
+
+      // Generate a unique slug using the title and category name
+      const slug = await generateUniqueSlug(Job, title, categorydata.name);
+
+      // Prepare job data
+      const jobData = {
+        ...req.body,
+        slug,
+      };
+
+      // Create job
+      const result = await REST_API.create(Job, jobData);
+
+      // Send response
+      res.status(201).json(result);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
 
   // updateJob: async (req, res) => {
   //   try {
@@ -136,34 +193,6 @@ const JobController = {
   //     res.status(400).json({ error: error.message });
   //   }
   // },
-
-createJob: async (req, res) => {
-  try {
-    // Ensure category_id is passed as an array
-    const categoryIds = Array.isArray(req.body.category_id) ? req.body.category_id : [req.body.category_id];
-
-    // Generate the unique slug for the job title
-    const slug = await generateUniqueSlug(Job, req.body.title);
-
-    // Prepare job data, passing categoryIds as a JSON array
-    const jobData = {
-      ...req.body,
-      category_id: categoryIds,  // category_id should be an array (JSON format)
-      slug,
-    };
-
-    // Create the job in the database
-    const result = await REST_API.create(Job, jobData);
-    
-    // Respond with the created job
-    res.status(201).json(result);
-  } catch (error) {
-    console.error("Job creation error:", error);
-    res.status(500).json({ error: error.message });
-  }
-},
-
-
   updateJob: async (req, res) => {
     try {
       const existingJob = await Job.findByPk(req.params.id);
