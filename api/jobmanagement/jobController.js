@@ -31,14 +31,13 @@ const JobController = {
         //   { model: Subcategory, attributes: ["name"] },
         // ],
 
-include: [
-            { model: Category  },
-            { model: Depertment  },
-            { model: JobSEO  },
-            { model: State  },
-            { model: Subcategory  },
-          ],
-
+        include: [
+          { model: Category },
+          { model: Depertment },
+          { model: JobSEO },
+          { model: State },
+          { model: Subcategory },
+        ],
       });
 
       res.json(result);
@@ -76,11 +75,11 @@ include: [
           // ],
 
           include: [
-            { model: Category  },
-            { model: Depertment  },
-            { model: JobSEO  },
-            { model: State  },
-            { model: Subcategory  },
+            { model: Category },
+            { model: Depertment },
+            { model: JobSEO },
+            { model: State },
+            { model: Subcategory },
           ],
         }
       );
@@ -90,26 +89,29 @@ include: [
     }
   },
 
-  createJob: async (req, res) => {
-    try {
-      const categorydata = await Category.findOne({
-        where: { id: req.body.category_id },
-      });
+  // createJob: async (req, res) => {
+  //   try {
 
-      console.log(categorydata);
+  //     const categorydata = await Category.findOne({
+  //       where: { id: req.body.category_id },
+  //     });
+  //     const data=req.body.category_id;
+  //     req.body.category_id = JSON.parse(data);
 
-      const slug = await generateUniqueSlug(
-        Job,
-        req.body.title,
-        categorydata.name
-      );
-      const jobData = { ...req.body, slug };
-      const result = await REST_API.create(Job, jobData);
-      res.status(201).json(result);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  },
+  //     console.log(categorydata);
+
+  //     const slug = await generateUniqueSlug(
+  //       Job,
+  //       req.body.title,
+  //       categorydata.name
+  //     );
+  //     const jobData = { ...req.body, slug };
+  //     const result = await REST_API.create(Job, jobData);
+  //     res.status(201).json(result);
+  //   } catch (error) {
+  //     res.status(400).json({ error: error.message });
+  //   }
+  // },
 
   // updateJob: async (req, res) => {
   //   try {
@@ -134,6 +136,57 @@ include: [
   //     res.status(400).json({ error: error.message });
   //   }
   // },
+
+  createJob: async (req, res) => {
+    try {
+      // Validate category_id is an array
+      if (!Array.isArray(req.body.category_id)) {
+        return res.status(400).json({ error: "Category ID must be an array" });
+      }
+
+      // Validate at least one category is provided
+      if (req.body.category_id.length === 0) {
+        return res
+          .status(400)
+          .json({ error: "At least one category is required" });
+      }
+
+      // Find the first category to use for slug generation
+      const categorydata = await Category.findOne({
+        where: { id: req.body.category_id[0] }, // Use first category for slug
+      });
+
+      if (!categorydata) {
+        return res.status(404).json({ error: "Category not found" });
+      }
+
+      // Generate unique slug using the first category name
+      const slug = await generateUniqueSlug(
+        Job,
+        req.body.title,
+        categorydata.name
+      );
+
+      // Prepare job data
+      const jobData = {
+        ...req.body,
+        slug,
+        // If you want to ensure category_id is stored correctly
+        category_id: req.body.category_id,
+      };
+
+      // Create job
+      const result = await REST_API.create(Job, jobData);
+
+      res.status(201).json(result);
+    } catch (error) {
+      console.error("Job creation error:", error);
+      res
+        .status(500)
+        .json({ error: "Internal server error", details: error.message });
+    }
+  },
+
   updateJob: async (req, res) => {
     try {
       const existingJob = await Job.findByPk(req.params.id);
