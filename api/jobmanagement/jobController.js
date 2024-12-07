@@ -91,7 +91,7 @@ const JobController = {
 
   createJob: async (req, res) => {
     try {
-      // Check if all required fields are present
+      // Destructure required fields
       const {
         category_id,
         state_id,
@@ -101,39 +101,34 @@ const JobController = {
         description,
       } = req.body;
 
-      // Check if the required fields are not empty
-      if (
-        !category_id ||
-        !Array.isArray(category_id) ||
-        category_id.length === 0
-      ) {
-        return res
-          .status(400)
-          .json({ error: "Category is required and should be an array." });
-      }
-      if (!state_id || !Array.isArray(state_id) || state_id.length === 0) {
-        return res
-          .status(400)
-          .json({ error: "State is required and should be an array." });
-      }
-      if (
-        !subcategory_id ||
-        !Array.isArray(subcategory_id) ||
-        subcategory_id.length === 0
-      ) {
-        return res
-          .status(400)
-          .json({ error: "Subcategory is required and should be an array." });
-      }
-      if (
-        !department_id ||
-        !Array.isArray(department_id) ||
-        department_id.length === 0
-      ) {
-        return res
-          .status(400)
-          .json({ error: "Department is required and should be an array." });
-      }
+      // Validation function to check arrays
+      const validateArrayField = (field, fieldName) => {
+        if (!field || !Array.isArray(field) || field.length === 0) {
+          throw new Error(`${fieldName} is required and should be an array.`);
+        }
+        // Ensure all elements are integers
+        return field.map((id) => {
+          const parsedId = parseInt(id, 10);
+          if (isNaN(parsedId)) {
+            throw new Error(`Invalid ${fieldName} value: ${id}`);
+          }
+          return parsedId;
+        });
+      };
+
+      // Validate and parse all array fields
+      const validatedCategoryIds = validateArrayField(category_id, "Category");
+      const validatedStateIds = validateArrayField(state_id, "State");
+      const validatedSubcategoryIds = validateArrayField(
+        subcategory_id,
+        "Subcategory"
+      );
+      const validatedDepartmentIds = validateArrayField(
+        department_id,
+        "Department"
+      );
+
+      // Additional basic validations
       if (!title || !description) {
         return res
           .status(400)
@@ -142,21 +137,23 @@ const JobController = {
 
       // Fetch category data to generate slug
       const categorydata = await Category.findOne({
-        where: { id: category_id[0] }, // Using the first category for slug generation
+        where: { id: validatedCategoryIds[0] }, // Using the first category for slug generation
       });
 
       if (!categorydata) {
         return res.status(400).json({ error: "Category not found." });
       }
 
-      console.log("Category Data:", categorydata);
-
       // Generate a unique slug using the title and category name
       const slug = await generateUniqueSlug(Job, title, categorydata.name);
 
-      // Prepare job data
+      // Prepare job data with comma-separated integer strings
       const jobData = {
         ...req.body,
+        category_id: validatedCategoryIds.join(","),
+        state_id: validatedStateIds.join(","),
+        subcategory_id: validatedSubcategoryIds.join(","),
+        department_id: validatedDepartmentIds.join(","),
         slug,
       };
 
@@ -166,6 +163,7 @@ const JobController = {
       // Send response
       res.status(201).json(result);
     } catch (error) {
+      console.error("Job creation error:", error);
       res.status(400).json({ error: error.message });
     }
   },
