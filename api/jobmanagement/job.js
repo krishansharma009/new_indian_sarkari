@@ -33,6 +33,7 @@ Job.init(
 
     jobSeo_id: {
       type: DataTypes.INTEGER,
+      allowNull: true,
       references: {
         model: "jobseos",
         key: "id",
@@ -41,6 +42,7 @@ Job.init(
 
     state_id: {
       type: DataTypes.INTEGER,
+      allowNull: true,
       references: {
         model: "states",
         key: "id",
@@ -48,6 +50,7 @@ Job.init(
     },
     subcategory_id: {
       type: DataTypes.INTEGER,
+      allowNull: true,
       references: {
         model: "subcategorys", // corrected spelling
         key: "id",
@@ -55,6 +58,7 @@ Job.init(
     },
     department_id: {
       type: DataTypes.INTEGER,
+      allowNull: true,
       references: {
         model: "depertments", // corrected spelling
         key: "id",
