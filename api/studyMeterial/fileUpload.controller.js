@@ -21,10 +21,9 @@ const FileUploadController = {
       let filePath = null;
       if (req.file) {
         // filePath = req.file.path;
-        // Extract only the relative path
+        // Simple path extraction method
         filePath = req.file.path.replace(/^.*uploads[\\\/]/, "/uploads/");
       }
-
 
       const fileData = {
         title,
@@ -111,8 +110,6 @@ const FileUploadController = {
         include: [{ model: Category }],
       };
 
-
-
       const result = await REST_API.getAll(FileUpload, {}, options);
       res.json(result);
     } catch (error) {
@@ -138,70 +135,63 @@ const FileUploadController = {
     }
   },
 
-
- async getAll(req, res) {
+  async getAll(req, res) {
     try {
-      const { 
-        uploadType, 
-        courseType, 
-        accessType, 
-        sortBy = 'createdAt', 
-        sortOrder = 'DESC' 
+      const {
+        uploadType,
+        courseType,
+        accessType,
+        sortBy = "createdAt",
+        sortOrder = "DESC",
       } = req.query;
-
-
 
       // Construct where clause for filtering
       const whereClause = {};
-      
+
       // Filtering options
       if (uploadType) {
         whereClause.uploadType = uploadType;
       }
-      
+
       if (courseType) {
         whereClause.courseType = courseType;
       }
-      
+
       if (accessType) {
         whereClause.accessType = accessType;
       }
 
       // Search across multiple fields
-      
-
-    
 
       // Fetch files with filtering, pagination, and sorting
       const { count, rows: files } = await FileUpload.findAndCountAll({
         where: whereClause,
-        attributes: { 
-          exclude: ['filePath'], // Exclude sensitive file path information
+        attributes: {
+          exclude: ["filePath"], // Exclude sensitive file path information
         },
         include: [{ model: Category }],
-
       });
 
       // Prepare response
-      res.json({ rows:files });
+      res.json({ files });
     } catch (error) {
-      res.status(500).json({ 
-        message: 'Error fetching files',
-        error: error.message 
+      res.status(500).json({
+        message: "Error fetching files",
+        error: error.message,
       });
     }
   },
 
   // Get File by ID with Detailed Information
-   async getById(req, res) {
+  async getById(req, res) {
     try {
       const { id } = req.params;
 
       // Find file by ID with optional related data
       const file = await FileUpload.findByPk(id, {
-        attributes: { 
-          exclude: ['filePath'] // Exclude sensitive file path information
-        }
+        attributes: {
+          exclude: ["filePath"], // Exclude sensitive file path information
+        },
         // Uncomment and modify if you want to include associations
         // include: [
         //   { model: User, attributes: ['id', 'name'] }
@@ -210,9 +200,9 @@ const FileUploadController = {
 
       // Check if file exists
       if (!file) {
-        return res.status(404).json({ 
-          message: 'File not found',
-          fileId: id 
+        return res.status(404).json({
+          message: "File not found",
+          fileId: id,
         });
       }
 
@@ -222,18 +212,12 @@ const FileUploadController = {
 
       res.json(file);
     } catch (error) {
-      res.status(500).json({ 
-        message: 'Error fetching file details',
-        error: error.message 
+      res.status(500).json({
+        message: "Error fetching file details",
+        error: error.message,
       });
     }
   },
-
-
 };
-
-
-
-
 
 module.exports = FileUploadController;

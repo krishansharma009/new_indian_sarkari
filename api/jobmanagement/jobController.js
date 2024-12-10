@@ -1,255 +1,229 @@
-const REST_API = require("../../utils/curdHelper");
+const { Op } = require("sequelize");
+const sequelize = require("../../config/datasource-db");
 const Job = require("./job");
 const Category = require("../CategoryManagenet/categoryModel");
 const Depertment = require("../DepartmentManagement/depertment");
 const JobSEO = require("../SEOmanagement/JobSeo");
 const State = require("../StateManagement/state");
 const Subcategory = require("../SubcategoryManagement/subcategory");
-
+const JobCategory = require("../CategoryManagenet/jobCategoryModel");
 const generateUniqueSlug = require("../../utils/slugyfy");
 
 const JobController = {
+  // Get All Jobs with Categories
   getAllJobs: async (req, res) => {
     try {
-      //      const result = await Job.findAll({
-      //   where: req.query,
-      //   include: [
-      //     { model: Category, attributes: ['name'] },
-      //     { model: Department, attributes: ['name'] },
-      //     { model: JobSEO, attributes: ['metaTitle', 'metaDescription'] },
-      //     { model: State, attributes: ['name'] },
-      //     { model: Subcategory, attributes: ['name'] }
-      //   ]
-      // });
+      const { page = 1, limit = 10, search, category_id } = req.query;
+      const offset = (page - 1) * limit;
 
-      const result = await REST_API.getAll(Job, req.query, {
-        // include: [
-        //   { model: Category, attributes: ["name"] },
-        //   { model: Depertment, attributes: ["name"] },
-        //   { model: JobSEO, attributes: ["metaTitle", "metaDescription"] },
-        //   { model: State, attributes: ["name"] },
-        //   { model: Subcategory, attributes: ["name"] },
-        // ],
+      // Build where conditions
+      const whereConditions = {};
+      if (search) {
+        whereConditions[Op.or] = [
+          { title: { [Op.like]: `%${search}%` } },
+          { description: { [Op.like]: `%${search}%` } },
+        ];
+      }
 
+      // Query configuration
+      const queryOptions = {
+        where: whereConditions,
         include: [
-          { model: Category },
+          {
+            model: Category,
+            as: "categories",
+            ...(category_id
+              ? {
+                  where: {
+                    id: category_id.split(",").map((id) => parseInt(id)),
+                  },
+                }
+              : {}),
+          },
           { model: Depertment },
-          { model: JobSEO },
           { model: State },
           { model: Subcategory },
         ],
-      });
+        offset: parseInt(offset),
+        limit: parseInt(limit),
+        order: [["created_at", "DESC"]],
+      };
 
-      res.json(result);
+      // Fetch jobs
+      const { count, rows: jobs } = await Job.findAndCountAll(queryOptions);
+
+      res.json({
+        total: count,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        jobs,
+      });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
 
-  // getJobById: async (req, res) => {
-  //   try {
-  //     const result = await REST_API.getDataListByField(
-  //       Job,
-  //       "id",
-  //       req.params.id
-  //     );
-  //     res.json(result[0]);
-  //   } catch (error) {
-  //     res.status(404).json({ error: error.message });
-  //   }
-  // },
-
+  // Get Job by ID
   getJobById: async (req, res) => {
     try {
-      const result = await REST_API.getDataListByField(
-        Job,
-        "id",
-        req.params.id,
-        {
-          // include: [
-          //   { model: Category, attributes: ["name"] },
-          //   { model: Depertment, attributes: ["name"] },
-          //   { model: JobSEO, attributes: ["metaTitle", "metaDescription"] },
-          //   { model: State, attributes: ["name"] },
-          //   { model: Subcategory, attributes: ["name"] },
-          // ],
+      const job = await Job.findByPk(req.params.id, {
+        include: [
+          { model: Category, as: "categories" },
+          { model: Depertment },
+          { model: State },
+          { model: Subcategory },
+        ],
+      });
 
-          include: [
-            { model: Category },
-            { model: Depertment },
-            { model: JobSEO },
-            { model: State },
-            { model: Subcategory },
-          ],
-        }
-      );
-      res.json(result[0]);
+      if (!job) {
+        return res.status(404).json({ error: "Job not found" });
+      }
+
+      res.json(job);
     } catch (error) {
       res.status(404).json({ error: error.message });
     }
   },
 
+  // Create Job
   createJob: async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
-      // Destructure required fields
       const {
-        category_id,
-        state_id,
-        subcategory_id,
-        department_id,
         title,
         description,
+        category_id = [], // Ensure this is an array
+        ...otherFields
       } = req.body;
 
-      // Validation function to check arrays
-      const validateArrayField = (field, fieldName) => {
-        if (!field || !Array.isArray(field) || field.length === 0) {
-          throw new Error(`${fieldName} is required and should be an array.`);
-        }
-        // Ensure all elements are integers
-        return field.map((id) => {
-          const parsedId = parseInt(id, 10);
-          if (isNaN(parsedId)) {
-            throw new Error(`Invalid ${fieldName} value: ${id}`);
-          }
-          return parsedId;
-        });
-      };
-
-      // Validate and parse all array fields
-      const validatedCategoryIds = validateArrayField(category_id, "Category");
-      const validatedStateIds = validateArrayField(state_id, "State");
-      const validatedSubcategoryIds = validateArrayField(
-        subcategory_id,
-        "Subcategory"
-      );
-      const validatedDepartmentIds = validateArrayField(
-        department_id,
-        "Department"
+      // Create job without specifying category_id
+      const job = await Job.create(
+        {
+          title,
+          description,
+          slug: await generateUniqueSlug(Job, title),
+          ...otherFields,
+        },
+        { transaction }
       );
 
-      // Additional basic validations
-      if (!title || !description) {
-        return res
-          .status(400)
-          .json({ error: "Title and description are required." });
+      // Create job-category associations
+      if (category_id && category_id.length > 0) {
+        const jobCategories = category_id.map((categoryId) => ({
+          job_id: job.id,
+          category_id: categoryId,
+        }));
+
+        await JobCategory.bulkCreate(jobCategories, { transaction });
       }
 
-      // Fetch category data to generate slug
-      const categorydata = await Category.findOne({
-        where: { id: validatedCategoryIds[0] }, // Using the first category for slug generation
+      await transaction.commit();
+
+      // Fetch the job with categories
+      const fullJob = await Job.findByPk(job.id, {
+        include: [
+          {
+            model: Category,
+            as: "categories",
+          },
+        ],
       });
 
-      if (!categorydata) {
-        return res.status(400).json({ error: "Category not found." });
-      }
-
-      // Generate a unique slug using the title and category name
-      const slug = await generateUniqueSlug(Job, title, categorydata.name);
-
-      // Prepare job data with comma-separated integer strings
-      const jobData = {
-        ...req.body,
-        category_id: validatedCategoryIds.join(","),
-        state_id: validatedStateIds.join(","),
-        subcategory_id: validatedSubcategoryIds.join(","),
-        department_id: validatedDepartmentIds.join(","),
-        slug,
-      };
-
-      // Create job
-      const result = await REST_API.create(Job, jobData);
-
-      // Send response
-      res.status(201).json(result);
+      res.status(201).json(fullJob);
     } catch (error) {
-      console.error("Job creation error:", error);
+      await transaction.rollback();
       res.status(400).json({ error: error.message });
     }
   },
 
-  // updateJob: async (req, res) => {
-  //   try {
-  //     const existingJob = await Job.findByPk(req.params.id);
-  //     if (!existingJob) {
-  //       return res.status(404).json({ error: "Job not found" });
-  //     }
-
-  //     let updatedData = { ...req.body };
-  //     if (req.body.title && req.body.title !== existingJob.title) {
-  //       const newSlug = await generateUniqueSlug(
-  //         Job,
-  //         req.body.title,
-  //         existingJob.id
-  //       );
-  //       updatedData.slug = newSlug;
-  //     }
-
-  //     const result = await REST_API.update(Job, req.params.id, updatedData);
-  //     res.json(result);
-  //   } catch (error) {
-  //     res.status(400).json({ error: error.message });
-  //   }
-  // },
+  // Update Job
   updateJob: async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
-      const existingJob = await Job.findByPk(req.params.id);
+      const { id } = req.params;
+      const { title, description, category_id, ...otherFields } = req.body;
+
+      // Find existing job
+      const existingJob = await Job.findByPk(id);
       if (!existingJob) {
         return res.status(404).json({ error: "Job not found" });
       }
 
-      let updatedData = { ...req.body };
+      // Generate new slug if title changed
+      const slug =
+        title && title !== existingJob.title
+          ? await generateUniqueSlug(Job, title)
+          : existingJob.slug;
 
-      // Generate a new slug if the title has changed
-      if (req.body.title && req.body.title !== existingJob.title) {
-        const newSlug = await generateUniqueSlug(
-          Job,
-          req.body.title,
-          existingJob.id
-        );
-        updatedData.slug = newSlug;
+      // Update job
+      await existingJob.update(
+        {
+          title: title || existingJob.title,
+          description: description || existingJob.description,
+          slug,
+          ...otherFields,
+        },
+        { transaction }
+      );
+
+      // Update categories
+      if (category_id) {
+        // Remove existing associations
+        await JobCategory.destroy({
+          where: { job_id: id },
+          transaction,
+        });
+
+        // Create new associations
+        if (category_id.length > 0) {
+          const jobCategories = category_id.map((categoryId) => ({
+            job_id: id,
+            category_id: categoryId,
+          }));
+
+          await JobCategory.bulkCreate(jobCategories, { transaction });
+        }
       }
 
-      // Update the job post
-      await REST_API.update(Job, req.params.id, updatedData);
+      await transaction.commit();
 
-      // Fetch the updated job post
-      const updatedJob = await Job.findByPk(req.params.id);
+      // Fetch updated job
+      const updatedJob = await Job.findByPk(id, {
+        include: [{ model: Category, as: "categories" }],
+      });
 
-      // Return the updated job post in the response
       res.json(updatedJob);
     } catch (error) {
+      await transaction.rollback();
       res.status(400).json({ error: error.message });
     }
   },
 
+  // Delete Job
   deleteJob: async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
-      await REST_API.delete(Job, req.params.id);
-      res.status(204).send();
+      const job = await Job.findByPk(req.params.id);
+      if (!job) {
+        return res.status(404).json({ error: "Job not found" });
+      }
+
+      // Remove job-category associations
+      await JobCategory.destroy({
+        where: { job_id: req.params.id },
+        transaction,
+      });
+
+      // Delete job
+      await job.destroy({ transaction });
+
+      await transaction.commit();
+      res.status(204).send("Job deleted successfully");
     } catch (error) {
+      await transaction.rollback();
       res.status(400).json({ error: error.message });
     }
   },
 };
 
 module.exports = JobController;
-
-
-
-
-
-
-//  updateJob: async (req, res) => {
-//     try {
-//       await REST_API.update(Category, req.params.id, req.body);
-//       const updatedjob = await Category.findByPk(req.params.id);
-//       if (updatedjob) {
-//         res.json(updatedjob);
-//       } else {
-//         res.status(404).json({ error: "Category not found" });
-//       }
-//     } catch (error) {
-//       res.status(500).json({ error: error.message });
-//     }
-//   },

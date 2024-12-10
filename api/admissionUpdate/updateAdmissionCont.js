@@ -3,7 +3,7 @@ const AdmissionUpdate = require("./updateAdmission");
 
 const Category = require("../CategoryManagenet/categoryModel");
 const Depertment = require("../DepartmentManagement/depertment");
-const JobSEO = require("../SEOmanagement/JobSeo");
+// const JobSEO = require("../SEOmanagement/JobSeo");
 const State = require("../StateManagement/state");
 const Subcategory = require("../SubcategoryManagement/subcategory");
 const Admission = require("../goverment_admissilns/admission");
@@ -35,9 +35,7 @@ const AdmissionUpdateController = {
 
   createAdmissionUpdate: async (req, res) => {
     try {
-      const job = await Admission.findOne({
-        where: { id: req.body.admission_id },
-      });
+      const job = await Admission.findOne({ where: { id: req.body.admission_id } });
       req.body.category_id = job.category_id;
       req.body.jobSeo_id = job.jobSeo_id;
       req.body.state_id = job.state_id;
@@ -111,7 +109,7 @@ const AdmissionUpdateController = {
 
   getUniversities: async (req, res) => {
     try {
-      const condition = {
+      const result = await AdmissionUpdate.findAll({
         where: { update_type: "universities" },
         order: [["update_date", "DESC"]],
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
@@ -123,45 +121,18 @@ const AdmissionUpdateController = {
           { model: State },
           { model: Subcategory },
         ],
-      };
-
-      const result = await REST_API.getAll(
-        AdmissionUpdate,
-        req.query,
-        condition
-      );
+        limit: 10, // Adjust the limit as needed
+      });
       res.json(result);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
 
-  // getColleges: async (req, res) => {
-  //   try {
-  //     const result = await AdmissionUpdate.findAll({
-  //       where: { update_type: "result" },
-  //       order: [["update_date", "DESC"]],
-  //       // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
-  //       include: [
-  //         { model: Admission },
-  //         { model: Category },
-  //         { model: Depertment },
-  //         { model: JobSEO },
-  //         { model: State },
-  //         { model: Subcategory },
-  //       ],
-  //       limit: 10, // Adjust the limit as needed
-  //     });
-  //     res.json(result);
-  //   } catch (error) {
-  //     res.status(500).json({ error: error.message });
-  //   }
-  // },
-
   getColleges: async (req, res) => {
     try {
-      const condition = {
-        where: { update_type: "college" },
+      const result = await AdmissionUpdate.findAll({
+        where: { update_type: "result" },
         order: [["update_date", "DESC"]],
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
         include: [
@@ -172,12 +143,8 @@ const AdmissionUpdateController = {
           { model: State },
           { model: Subcategory },
         ],
-      };
-      const result = await REST_API.getAll(
-        AdmissionUpdate,
-        req.query,
-        condition
-      );
+        limit: 10, // Adjust the limit as needed
+      });
       res.json(result);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -186,3 +153,5 @@ const AdmissionUpdateController = {
 };
 
 module.exports = AdmissionUpdateController;
+
+

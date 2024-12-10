@@ -51,6 +51,7 @@ const AdmissionController = {
 
   createAdmission: async (req, res) => {
     try {
+      console.log(req.body.title);
       const categorydata = await Category.findOne({
         where: { id: req.body.category_id },
       });
@@ -62,6 +63,7 @@ const AdmissionController = {
         req.body.title,
         categorydata.name
       );
+      console.log(slug);
       const jobData = { ...req.body, slug };
       const result = await REST_API.create(Admission, jobData);
       res.status(201).json(result);

@@ -4,7 +4,7 @@ const Job = require("../jobmanagement/job");
 
 const Category = require("../CategoryManagenet/categoryModel");
 const Depertment = require("../DepartmentManagement/depertment");
-const JobSEO = require("../SEOmanagement/JobSeo");
+// const JobSEO = require("../SEOmanagement/JobSeo");
 const State = require("../StateManagement/state");
 const Subcategory = require("../SubcategoryManagement/subcategory");
 // const { Op } = require("sequelize");
@@ -37,7 +37,7 @@ const JobUpdateController = {
     try {
       const job=await Job.findOne({where:{id:req.body.job_id}});
       req.body.category_id=job.category_id;
-      req.body.jobSeo_id = job.jobSeo_id;
+      // req.body.jobSeo_id = job.jobSeo_id;
       req.body.state_id = job.state_id;
       req.body.subcategory_id = job.subcategory_id;
       req.body.department_id = job.department_id;
@@ -86,9 +86,9 @@ const JobUpdateController = {
         order: [["update_date", "DESC"]],
         include: [
           { model: Job },
-          { model: Category },
+          { model: Category, as: "categories", through: { attributes: [] } },
           { model: Depertment },
-          { model: JobSEO },
+          // { model: JobSEO },
           { model: State },
           { model: Subcategory },
         ],
@@ -108,9 +108,9 @@ const JobUpdateController = {
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
         include: [
           { model: Job },
-          { model: Category },
+          { model: Category, as: "categories", through: { attributes: [] } },
           { model: Depertment },
-          { model: JobSEO },
+          // { model: JobSEO },
           { model: State },
           { model: Subcategory },
         ],
@@ -130,9 +130,9 @@ const JobUpdateController = {
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
         include: [
           { model: Job },
-          { model: Category },
+          { model: Category, as: "categories", through: { attributes: [] } },
           { model: Depertment },
-          { model: JobSEO },
+          // { model: JobSEO },
           { model: State },
           { model: Subcategory },
         ],
@@ -147,16 +147,4 @@ const JobUpdateController = {
 
 module.exports = JobUpdateController;
 
-//  updateJobUpdate: async (req, res) => {
-//     try {
-//       await REST_API.update(Category, req.params.id, req.body);
-//       const updatedJob = await Category.findByPk(req.params.id);
-//       if (updatedJob) {
-//         res.json(updatedJob);
-//       } else {
-//         res.status(404).json({ error: "Category not found" });
-//       }
-//     } catch (error) {
-//       res.status(500).json({ error: error.message });
-//     }
-//   },
+
