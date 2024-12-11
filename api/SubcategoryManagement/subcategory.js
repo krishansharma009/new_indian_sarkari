@@ -12,7 +12,7 @@ Subcategory.init(
     },
     category_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: Category, // Correctly reference the Category model
         key: "id",
