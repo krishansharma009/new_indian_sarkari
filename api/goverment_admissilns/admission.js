@@ -4,7 +4,7 @@ const Category = require("../../api/CategoryManagenet/categoryModel");
 const State = require("../../api/StateManagement/state");
 const Subcategory = require("../../api/SubcategoryManagement/subcategory");
 const Department = require("../DepartmentManagement/depertment"); // corrected spelling
-// const JobSEO = require("../SEOmanagement/JobSeo");
+const JobSEO = require("../SEOmanagement/JobSeo");
 
 class Admission extends Model {}
 Admission.init(
@@ -110,6 +110,6 @@ Admission.belongsTo(Department, {
   onDelete: "SET NULL",
 });
 
-// Admission.belongsTo(JobSEO, { foreignKey: "jobSeo_id", onDelete: "SET NULL" });
+Admission.belongsTo(JobSEO, { foreignKey: "jobSeo_id", onDelete: "SET NULL" });
 
 module.exports = Admission;

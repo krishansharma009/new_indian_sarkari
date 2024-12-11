@@ -86,7 +86,7 @@ const JobUpdateController = {
         order: [["update_date", "DESC"]],
         include: [
           { model: Job },
-          { model: Category, as: "categories", through: { attributes: [] } },
+          { model: Category },
           { model: Depertment },
           // { model: JobSEO },
           { model: State },
@@ -108,7 +108,7 @@ const JobUpdateController = {
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
         include: [
           { model: Job },
-          { model: Category, as: "categories", through: { attributes: [] } },
+          { model: Category },
           { model: Depertment },
           // { model: JobSEO },
           { model: State },
@@ -130,7 +130,7 @@ const JobUpdateController = {
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
         include: [
           { model: Job },
-          { model: Category, as: "categories", through: { attributes: [] } },
+          { model: Category },
           { model: Depertment },
           // { model: JobSEO },
           { model: State },
@@ -147,4 +147,16 @@ const JobUpdateController = {
 
 module.exports = JobUpdateController;
 
-
+//  updateJobUpdate: async (req, res) => {
+//     try {
+//       await REST_API.update(Category, req.params.id, req.body);
+//       const updatedJob = await Category.findByPk(req.params.id);
+//       if (updatedJob) {
+//         res.json(updatedJob);
+//       } else {
+//         res.status(404).json({ error: "Category not found" });
+//       }
+//     } catch (error) {
+//       res.status(500).json({ error: error.message });
+//     }
+//   },

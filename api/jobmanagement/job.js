@@ -5,7 +5,6 @@ const State = require("../../api/StateManagement/state");
 const Subcategory = require("../../api/SubcategoryManagement/subcategory");
 const Department = require("../DepartmentManagement/depertment"); // corrected spelling
 // const JobSEO = require("../SEOmanagement/JobSeo");
-const JobCategory = require("../CategoryManagenet/jobCategoryModel");
 
 class Job extends Model {}
 Job.init(
@@ -33,7 +32,6 @@ Job.init(
 
     jobSeo_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
       references: {
         model: "jobseos",
         key: "id",
@@ -42,7 +40,6 @@ Job.init(
 
     state_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
       references: {
         model: "states",
         key: "id",
@@ -50,7 +47,6 @@ Job.init(
     },
     subcategory_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
       references: {
         model: "subcategorys", // corrected spelling
         key: "id",
@@ -58,7 +54,6 @@ Job.init(
     },
     department_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
       references: {
         model: "depertments", // corrected spelling
         key: "id",
@@ -101,7 +96,7 @@ Job.init(
 );
 
 // Define associations
-// Job.belongsTo(Category, { foreignKey: "category_id", onDelete: "SET NULL" });
+Job.belongsTo(Category, { foreignKey: "category_id", onDelete: "SET NULL" });
 Job.belongsTo(State, { foreignKey: "state_id", onDelete: "SET NULL" });
 Job.belongsTo(Subcategory, {
   foreignKey: "subcategory_id",
@@ -110,22 +105,6 @@ Job.belongsTo(Subcategory, {
 Job.belongsTo(Department, {
   foreignKey: "department_id",
   onDelete: "SET NULL",
-});
-
-// Many-to-Many relationship with Category
-Job.belongsToMany(Category, {
-  through: JobCategory,
-  foreignKey: 'job_id',
-  otherKey: 'category_id',
-  as: 'categories'
-});
-
-// Reverse association
-Category.belongsToMany(Job, {
-  through: JobCategory,
-  foreignKey: 'category_id',
-  otherKey: 'job_id',
-  as: 'jobs'
 });
 
 // Job.belongsTo(JobSEO, {

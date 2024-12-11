@@ -9,19 +9,6 @@ Category.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    slug: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      // unique: true,
-    },
-    created_by: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    updated_by: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

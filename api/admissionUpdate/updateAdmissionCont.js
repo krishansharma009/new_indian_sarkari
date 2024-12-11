@@ -3,7 +3,7 @@ const AdmissionUpdate = require("./updateAdmission");
 
 const Category = require("../CategoryManagenet/categoryModel");
 const Depertment = require("../DepartmentManagement/depertment");
-// const JobSEO = require("../SEOmanagement/JobSeo");
+const JobSEO = require("../SEOmanagement/JobSeo");
 const State = require("../StateManagement/state");
 const Subcategory = require("../SubcategoryManagement/subcategory");
 const Admission = require("../goverment_admissilns/admission");
