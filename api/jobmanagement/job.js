@@ -18,6 +18,10 @@ Job.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    date:{
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: false,
