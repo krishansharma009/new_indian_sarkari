@@ -63,9 +63,6 @@ Admission.init(
       type: DataTypes.TEXT("long"),
       allowNull: true,
     },
-    admit_card_link: DataTypes.STRING(255),
-    answer_key_link: DataTypes.STRING(255),
-    result_link: DataTypes.STRING(255),
     slug: {
       type: DataTypes.STRING(255),
       allowNull: false,
