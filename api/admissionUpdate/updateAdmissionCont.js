@@ -132,7 +132,7 @@ const AdmissionUpdateController = {
   getColleges: async (req, res) => {
     try {
       const result = await AdmissionUpdate.findAll({
-        where: { update_type: "result" },
+        where: { update_type: "college" },
         order: [["update_date", "DESC"]],
         // include: [{ model: Job, attributes: ["id", "title", "slug"] }],
         include: [
