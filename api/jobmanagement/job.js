@@ -14,6 +14,10 @@ Job.init(
       primaryKey: true,
       autoIncrement: true,
     },
+    jobUrl:{
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
     title: {
       type: DataTypes.STRING(255),
       allowNull: false,
