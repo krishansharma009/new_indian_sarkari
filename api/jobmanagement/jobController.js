@@ -11,18 +11,14 @@ const generateUniqueSlug = require("../../utils/slugyfy");
 const JobController = {
   getAllJobs: async (req, res) => {
     try {
-      
-
       const result = await REST_API.getAll(Job, req.query, {
-      
-include: [
-            { model: Category  },
-            { model: Depertment  },
-            // { model: JobSEO  },
-            { model: State  },
-            { model: Subcategory  },
-          ],
-
+        include: [
+          { model: Category },
+          { model: Depertment },
+          // { model: JobSEO  },
+          { model: State },
+          { model: Subcategory },
+        ],
       });
 
       res.json(result);
@@ -31,8 +27,6 @@ include: [
     }
   },
 
- 
-
   getJobById: async (req, res) => {
     try {
       const result = await REST_API.getDataListByField(
@@ -40,14 +34,12 @@ include: [
         "id",
         req.params.id,
         {
-         
-
           include: [
-            { model: Category  },
-            { model: Depertment  },
+            { model: Category },
+            { model: Depertment },
             // { model: JobSEO  },
-            { model: State  },
-            { model: Subcategory  },
+            { model: State },
+            { model: Subcategory },
           ],
         }
       );
@@ -57,19 +49,76 @@ include: [
     }
   },
 
+  getJobsByCategory: async (req, res) => {
+    try {
+      const categoryId = req.params.categoryId;
+      const result = await Job.findAll({
+        where: { category_id: categoryId },
+        include: [
+          { model: Category },
+          { model: Depertment },
+          { model: State },
+          { model: Subcategory },
+        ],
+        order: [["created_at", "DESC"]],
+      });
+
+      if (!result.length) {
+        return res
+          .status(404)
+          .json({ message: "No jobs found for this category" });
+      }
+
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  getJobBySlug: async (req, res) => {
+    try {
+      const result = await REST_API.getDataListByField(
+        Job,
+        "slug",
+        req.params.slug,
+        {
+          include: [
+            { model: Category },
+            { model: Depertment },
+            { model: State },
+            { model: Subcategory },
+          ],
+        }
+      );
+
+      if (!result.length) {
+        return res.status(404).json({ error: "Job not found" });
+      }
+
+      res.json(result[0]);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  // Modified create method to handle manual slug
   createJob: async (req, res) => {
     try {
       const categorydata = await Category.findOne({
         where: { id: req.body.category_id },
       });
 
-      console.log(categorydata);
+      if (!categorydata) {
+        return res.status(400).json({ error: "Category not found" });
+      }
 
+      // Use generateUniqueSlug for both manual and automatic slugs
       const slug = await generateUniqueSlug(
         Job,
-        req.body.title,
+        req.body.slug || req.body.title, // Use provided slug or fall back to title
         categorydata.name
       );
+
       const jobData = { ...req.body, slug };
       const result = await REST_API.create(Job, jobData);
       res.status(201).json(result);
@@ -78,6 +127,7 @@ include: [
     }
   },
 
+  // Modified update method to handle manual slug
   updateJob: async (req, res) => {
     try {
       const existingJob = await Job.findByPk(req.params.id);
@@ -86,24 +136,25 @@ include: [
       }
 
       let updatedData = { ...req.body };
+      const categorydata = await Category.findOne({
+        where: { id: existingJob.category_id },
+      });
 
-      // Generate a new slug if the title has changed
-      if (req.body.title && req.body.title !== existingJob.title) {
-        const newSlug = await generateUniqueSlug(
+      // Generate new slug if slug or title is provided
+      if (
+        req.body.slug ||
+        (req.body.title && req.body.title !== existingJob.title)
+      ) {
+        updatedData.slug = await generateUniqueSlug(
           Job,
-          req.body.title,
+          req.body.slug || req.body.title,
+          categorydata.name,
           existingJob.id
         );
-        updatedData.slug = newSlug;
       }
 
-      // Update the job post
       await REST_API.update(Job, req.params.id, updatedData);
-
-      // Fetch the updated job post
       const updatedJob = await Job.findByPk(req.params.id);
-
-      // Return the updated job post in the response
       res.json(updatedJob);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -121,10 +172,3 @@ include: [
 };
 
 module.exports = JobController;
-
-
-
-
-
-
-
