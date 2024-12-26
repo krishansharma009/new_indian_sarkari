@@ -19,6 +19,7 @@ const JobController = {
           { model: State },
           { model: Subcategory },
         ],
+        order: [["id", "DESC"]],
       });
 
       res.json(result);
@@ -88,6 +89,7 @@ const JobController = {
             { model: State },
             { model: Subcategory },
           ],
+          order: [["created_at", "DESC"]],
         }
       );
 
