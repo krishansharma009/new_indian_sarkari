@@ -64,6 +64,22 @@ JobUpdate.init(
       type: DataTypes.ENUM("admit_card", "answer_key", "result", "other"),
       allowNull: false,
     },
+    admitCardUrl:{
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    answerKeyUrl:{
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    resultUrl:{
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    otherUrl:{
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
     update_link: {
       type: DataTypes.STRING(255),
       allowNull: true,
