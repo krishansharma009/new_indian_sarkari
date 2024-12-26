@@ -35,8 +35,8 @@ const JobUpdateController = {
 
   createJobUpdate: async (req, res) => {
     try {
-      const job=await Job.findOne({where:{id:req.body.job_id}});
-      req.body.category_id=job.category_id;
+      const job = await Job.findOne({ where: { id: req.body.job_id } });
+      req.body.category_id = job.category_id;
       // req.body.jobSeo_id = job.jobSeo_id;
       req.body.state_id = job.state_id;
       req.body.subcategory_id = job.subcategory_id;
@@ -80,7 +80,6 @@ const JobUpdateController = {
 
   getAdmitCards: async (req, res) => {
     try {
-
       const condition = {
         where: { update_type: "admit_card" },
         order: [["update_date", "DESC"]],
@@ -93,7 +92,7 @@ const JobUpdateController = {
           { model: Subcategory },
         ],
       };
-      const result = await REST_API.getAll(JobUpdate,req.query, condition);
+      const result = await REST_API.getAll(JobUpdate, req.query, condition);
       res.json(result);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -138,6 +137,84 @@ const JobUpdateController = {
         ],
         limit: 10, // Adjust the limit as needed
       });
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  getAdmitCardById: async (req, res) => {
+    try {
+      const result = await JobUpdate.findOne({
+        where: {
+          id: req.params.id,
+          update_type: "admit_card",
+        },
+        include: [
+          { model: Job },
+          { model: Category },
+          { model: Depertment },
+          { model: State },
+          { model: Subcategory },
+        ],
+      });
+
+      if (!result) {
+        return res.status(404).json({ error: "Admit Card not found" });
+      }
+
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  getAnswerKeyById: async (req, res) => {
+    try {
+      const result = await JobUpdate.findOne({
+        where: {
+          id: req.params.id,
+          update_type: "answer_key",
+        },
+        include: [
+          { model: Job },
+          { model: Category },
+          { model: Depertment },
+          { model: State },
+          { model: Subcategory },
+        ],
+      });
+
+      if (!result) {
+        return res.status(404).json({ error: "Answer Key not found" });
+      }
+
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  getResultById: async (req, res) => {
+    try {
+      const result = await JobUpdate.findOne({
+        where: {
+          id: req.params.id,
+          update_type: "result",
+        },
+        include: [
+          { model: Job },
+          { model: Category },
+          { model: Depertment },
+          { model: State },
+          { model: Subcategory },
+        ],
+      });
+
+      if (!result) {
+        return res.status(404).json({ error: "Result not found" });
+      }
+
       res.json(result);
     } catch (error) {
       res.status(500).json({ error: error.message });

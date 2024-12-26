@@ -15,4 +15,11 @@ router.get("/get/admit-cards", JobUpdateController.getAdmitCards);
 router.get("/get/answer-keys", JobUpdateController.getAnswerKeys);
 router.get("/get/results", JobUpdateController.getResults);
 
+
+
+// New getById routes for specific types
+router.get("/admitCard/:id", JobUpdateController.getAdmitCardById);
+router.get("/answerKey/:id", JobUpdateController.getAnswerKeyById);
+router.get("/resultu/:id", JobUpdateController.getResultById);
+
 module.exports = router;
