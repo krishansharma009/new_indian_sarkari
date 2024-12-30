@@ -1,14 +1,17 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-const compression = require("compression");
 const morgan = require("morgan");
 const path = require("path");
+// const fileUploader = require("express-fileupload");
+// const multer = require("multer");
 const sequelize = require("./config/datasource-db");
 const logger = require("./middleware/logger");
 const rateLimiter = require("./middleware/rateLimiter");
 const swagger = require("./config/swagger");
 const swaggerUi = require("swagger-ui-express");
+const ClusterService = require("./cluster");
+const compression = require("compression");
 
 const errorHandler = require("./middleware/errorHandler");
 
@@ -39,11 +42,14 @@ const port = process.env.PORT || 8080;
 // Middleware
 app.use(cors());
 app.use(helmet());
+// app.use(multer().any());
+// app.use(fileUploader());
 app.use(rateLimiter);
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(compression());
+
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swagger));
@@ -116,23 +122,26 @@ app.use(errorHandler);
 // });
 
 // Database sync
-sequelize
-  .sync({ alter: true })
-  .then(() => {
+const syncDatabase = async () => {
+  try {
+    await sequelize.sync({ alter: true });
     console.log("Database synced successfully.");
     logger.info("Database synced successfully.");
-    // Start server
-    app.listen(port, () => {
-      logger.info(`Server running on port ${port}`);
-      console.log(`Server is running on http://localhost:${port}`);
-      // Print the Swagger URL in the console
-      console.log(
-        `Swagger Docs available at http://localhost:${port}/api-docs`
-      );
-    });
-  })
-  .catch((err) => {
+    return Promise.resolve();
+  } catch (err) {
     console.error("Error syncing database:", err);
     logger.error("Error syncing database:", err);
-    process.exit(1);
-  });
+    return Promise.reject(err);
+  }
+};
+
+
+// Start server with clustering
+ClusterService.clusterize(
+    syncDatabase,
+    () => {
+        app.listen(port, () => {
+            console.log(`Server running on port http://localhost:${port} - Worker ${process.pid}`);
+        });
+    }
+);

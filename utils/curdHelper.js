@@ -11,7 +11,7 @@ const REST_API = {
    */
   getAll: async (model, query = {}, options = {}) => {
     try {
-      const { page = 1, limit = 10, search, searchExact, filter, sort } = query;
+      const { page = 1, limit = 100, search, searchExact, filter, sort } = query;
       const offset = (page - 1) * limit;
       const where = {};
       let order = [];

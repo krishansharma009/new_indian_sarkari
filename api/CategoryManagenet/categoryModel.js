@@ -1,11 +1,15 @@
-const {DataTypes,Model} = require('sequelize');
+const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../../config/datasource-db");
 
-class Category extends Model{}
+class Category extends Model {}
 
 Category.init(
   {
     name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    categoryImg: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -26,4 +30,5 @@ Category.init(
     paranoid: true,
   }
 );
+
 module.exports = Category;
