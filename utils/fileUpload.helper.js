@@ -118,13 +118,16 @@ const storage = multer.diskStorage({
 // File upload middleware
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB file size limit
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB file size limit
   fileFilter: (req, file, cb) => {
     // Allowed file types
     const allowedFileTypes = [
       "application/pdf",
       "image/jpeg",
       "image/png",
+      "image/webp", 
+      "image/svg+xml", 
+      "image/x-icon", 
       "video/mp4",
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
