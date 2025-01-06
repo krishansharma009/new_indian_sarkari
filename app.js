@@ -114,7 +114,7 @@ app.use("/testSeries", testSeriesRouter);
 
 // Database sync
 sequelize
-  .sync({ alter: true })
+  .sync({ force: true })
   .then(() => {
     console.log("Database synced successfully.");
     logger.info("Database synced successfully.");
