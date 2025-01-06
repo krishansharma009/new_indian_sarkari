@@ -1,9 +1,7 @@
 .env
 env
 
+log
 logs
-.logs
-logs/app.log
-logs/error.log
-logs/localhost.log
-logs
+app.log
+error.log

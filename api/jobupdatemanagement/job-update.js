@@ -17,9 +17,42 @@ JobUpdate.init(
       primaryKey: true,
       autoIncrement: true,
     },
+    title: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    date:{
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    content: {
+      type: DataTypes.TEXT("long"),
+      allowNull: true,
+    },
+    slug: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      //   unique: true,
+    },
+    meta_title: {
+    type: DataTypes.STRING(255),
+    allowNull: true, 
+  },
+  meta_description: {
+    type: DataTypes.TEXT,
+    allowNull: true, 
+  },
+  canonical_url: {
+    type: DataTypes.STRING(255),
+    allowNull: true, 
+  },
     job_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: "jobs",
         key: "id",
@@ -105,7 +138,7 @@ JobUpdate.init(
 
 // Add the cascade delete behavior
 // Add the cascade delete behavior
-Job.hasMany(JobUpdate, { foreignKey: "job_id", onDelete: "CASCADE" });
+Job.hasMany(JobUpdate, { foreignKey: "job_id", onDelete: "CASCADE" , onUpdate: "cASCADE"});
 
 JobUpdate.belongsTo(Category, { foreignKey: "category_id", onDelete: "SET NULL" });
 JobUpdate.belongsTo(State, { foreignKey: "state_id", onDelete: "SET NULL" });
@@ -113,6 +146,6 @@ JobUpdate.belongsTo(Subcategory, { foreignKey: "subcategory_id", onDelete: "SET 
 JobUpdate.belongsTo(Department, { foreignKey: "department_id", onDelete: "SET NULL" });
 // JobUpdate.belongsTo(JobSEO, { foreignKey: "jobSeo_id", onDelete: "SET NULL" });
 
-JobUpdate.belongsTo(Job, { foreignKey: "job_id" });
+JobUpdate.belongsTo(Job, { foreignKey: "job_id", onDelete: "CASCADE",onUpdate: "CASCADE" });
 
 module.exports = JobUpdate;
