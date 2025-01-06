@@ -3,7 +3,7 @@ const sequelize = require("../../config/datasource-db");
 const Category = require("../../api/CategoryManagenet/categoryModel");
 const State = require("../../api/StateManagement/state");
 const Subcategory = require("../../api/SubcategoryManagement/subcategory");
-const Department = require("../DepartmentManagement/depertment"); // corrected spelling
+const Department = require("../DepartmentManagement/depertment"); 
 // const JobSEO = require("../SEOmanagement/JobSeo");
 
 class Job extends Model {}
@@ -56,14 +56,14 @@ Job.init(
     subcategory_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: "subcategorys", // corrected spelling
+        model: "subcategorys", 
         key: "id",
       },
     },
     department_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: "depertments", // corrected spelling
+        model: "depertments", 
         key: "id",
       },
     },
@@ -105,13 +105,13 @@ Job.init(
     },
   },
   {
-    sequelize, // specifying the Sequelize instance
+    sequelize, 
     tableName: "jobs",
-    modelName: "job", // corrected from moduleName to modelName
-    timestamps: true, // enabled timestamps
+    modelName: "job", 
+    timestamps: true, 
     paranoid: true,
-    createdAt: "created_at", // specifying custom createdAt field
-    updatedAt: "updated_at", // specifying custom updatedAt field
+    createdAt: "created_at", 
+    updatedAt: "updated_at", 
   }
 );
 
