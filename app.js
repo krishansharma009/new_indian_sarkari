@@ -25,6 +25,7 @@ const admissonRouter = require("./api/goverment_admissilns/adissionRoute");
 const updateAdmissionRouter = require("./api/admissionUpdate/updateAdmissionRout");
 const fileUploadRouter = require("./api/studyMeterial/fileUpload.routes");
 const generalKnowRouter = require("./api/studyMeterial/generalKnowledge/generalknowRoute");
+const socialLinkRoutes  = require("./api/SocialLinksManagements/SocialLinkRoutes");
 //testserize management
 
 const testCategoryRouter = require("./TestSeriesManagement/testSerises-Category/testCatRoute");
@@ -99,6 +100,7 @@ app.use("/admission", admissonRouter);
 app.use("/upadmis", updateAdmissionRouter);
 app.use("/fileUpload", fileUploadRouter);
 app.use("/generalknow", generalKnowRouter);
+app.use("/generate",socialLinkRoutes);
 
 //testserize route
 app.use("/testCat", testCategoryRouter);
