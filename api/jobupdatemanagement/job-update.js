@@ -19,7 +19,7 @@ JobUpdate.init(
     },
     title: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
     },
     date:{
       type: DataTypes.DATE,
@@ -27,7 +27,7 @@ JobUpdate.init(
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     content: {
       type: DataTypes.TEXT("long"),
@@ -35,7 +35,7 @@ JobUpdate.init(
     },
     slug: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       //   unique: true,
     },
     meta_title: {
