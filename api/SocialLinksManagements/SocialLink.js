@@ -13,7 +13,7 @@ SocialLink.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    icon: {
+    socialIcon: {
       type: DataTypes.STRING,
       allowNull: true, 
     },
