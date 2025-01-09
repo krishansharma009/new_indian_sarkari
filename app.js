@@ -3,12 +3,14 @@ const cors = require("cors");
 const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
+const { Sequelize } = require('sequelize');
 const path = require("path");
 const sequelize = require("./config/datasource-db");
 const logger = require("./middleware/logger");
 const rateLimiter = require("./middleware/rateLimiter");
 const swagger = require("./config/swagger");
 const swaggerUi = require("swagger-ui-express");
+const cookieParser = require('cookie-parser');
 
 const errorHandler = require("./middleware/errorHandler");
 
@@ -25,7 +27,9 @@ const admissonRouter = require("./api/goverment_admissilns/adissionRoute");
 const updateAdmissionRouter = require("./api/admissionUpdate/updateAdmissionRout");
 const fileUploadRouter = require("./api/studyMeterial/fileUpload.routes");
 const generalKnowRouter = require("./api/studyMeterial/generalKnowledge/generalknowRoute");
-const socialLinkRoutes  = require("./api/SocialLinksManagements/SocialLinkRoutes");
+const socialLinkRouter  = require("./api/SocialLinksManagements/SocialLinkRoutes");
+const authRouter = require("./api/userManagement/authRoutes");
+
 //testserize management
 
 const testCategoryRouter = require("./TestSeriesManagement/testSerises-Category/testCatRoute");
@@ -35,7 +39,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 // Basic authentication middleware
-
+app.use(cookieParser());
 // Middleware
 app.use(cors());
 app.use(helmet());
@@ -85,10 +89,224 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something broke!");
 });
 
+
+
+
+
+
+// API Route to fetch job data
+// app.get('/api/jobs', async (req, res) => {
+//   try {
+//     // Raw SQL query to fetch data from wp_posts table
+//     const [results, metadata] = await sequelize.query(`select *  FROM job_list`);
+
+//     // Send the results as response
+//     res.json(results); // This will send the fetched data in JSON format
+//   } catch (error) {
+//     console.error('Error fetching job data:', error);
+//     res.status(500).json({ message: 'Internal Server Error', error: error.message });
+//   }
+// });
+
+
+
+
+
+
+// app.get('/api/jobs/:slug', async (req, res) => {
+//   const slug = req.params.slug; 
+//   try {
+//     const [results, metadata] = await sequelize.query('select * FROM job_list WHERE slug = ?',{ replacements: [slug] });
+    
+//     if (results.length > 0) {
+//       res.json(results);
+//     } else {
+//       res.status(404).json({ message: 'Job not found for the given slug.' });
+//     }
+//   } catch (error) {
+//     console.error('Error fetching job data:', error);
+//     res.status(500).json({ message: 'Internal Server Error', error: error.message });
+//   }
+// });
+
+
+
+//  app.get('/api/jobs/:slug', async (req, res) => {
+//   const slug = req.params.slug; 
+//   const JobModel = require("./api/jobmanagement/job");
+//   const AdmitModel = require("./api/jobupdatemanagement/job-update");
+//   try {
+//     const [results, metadata] = await sequelize.query('select * FROM job_list ',{ replacements: [slug] });
+//     if(results.length>0){
+//    await Promise.all(
+//       results.map(async (jobData) => {
+//         const additionalContent = {
+//           Advt_No: jobData.Advt_No,
+//           Online_Application_Start: jobData.Online_Application_Start,
+//           Registration_Last_Date: jobData.Registration_Last_Date,
+//           Fee_Payment_Last_Date: jobData.Fee_Payment_Last_Date,
+//           Exam_Date: jobData.Exam_Date,
+//           Admit_Card_Date: jobData.Admit_Card_Date,
+//           Result_Date: jobData.Result_Date,
+//           Answer_Key: jobData.Answer_Key,
+//           General_OBC_Application_Fee: jobData.General_OBC_Application_Fee,
+//           SC_ST_Application_Fee: jobData.SC_ST_Application_Fee,
+//           Fresh_Candidates_Below_Age_Limit: jobData.Fresh_Candidates_Below_Age_Limit,
+//           Max_age: jobData.Max_age,
+//           Total_Vacancy: jobData.Total_Vacancy,
+//           Eligibility_Details: jobData.Eligibility_Details,
+//           official_link: jobData.official_link,
+//           admitcard_link: jobData.admitcard_link,
+//           result_link: jobData.result_link,
+//           answerkey_link: jobData.answerkey_link,
+//           examdate_link: jobData.examdate_link,
+//           apply_link: jobData.apply_link,
+//           notification_link: jobData.notification_link,
+//         };
+
+//         // Create a new job in the JobModel
+//        const job = await JobModel.create({
+//           title: jobData.Post_Title,
+//           description: jobData.Short_Information,
+//           slug: jobData.slug,
+//           meta_title: jobData.Post_Title,
+//           meta_description: jobData.Short_Information,
+//           canonical_url: jobData.official_link,
+//           date: jobData.Post_Update_Date,
+//           // state_id: jobData.State, // Uncomment if you want to map State field
+//           content: JSON.stringify(additionalContent), // Store additional fields as JSON
+//           admit_card_released: jobData.Admit_Card_Date ? "yes" : "no",
+//           answer_key_released: jobData.Answer_Key ? "yes" : "no",
+//           result_released: jobData.Result_Date ? "yes" : "no",
+//         });
+
+//         console.log(job.id);
+
+
+//       })
+//     );
+//     }
+//     if (results.length > 0) {
+//       res.json(results);
+//     } else {
+//       res.status(404).json({ message: 'Job not found for the given slug.' });
+//     }
+//   } catch (error) {
+//     console.error('Error fetching job data:', error);
+//     res.status(500).json({ message: 'Internal Server Error', error: error.message });
+//   }
+// });
+
+
+
+
+
+
 // Routes
 // app.use("/", publicRoutes);
 // app.use("/jobs", jobsRoutes);
 // app.use("/admin", adminRoutes);
+
+
+
+
+
+// const JobModel = require("./api/jobmanagement/job");
+// const JobUpdateModel = require("./api/jobupdatemanagement/job-update");
+
+// app.get('/api/jobsgk/', async (req, res) => { 
+//   const slug = req.params.slug;
+
+//   try {
+//     // Fetch job data using raw SQL query
+//     const [results, metadata] = await sequelize.query(`SELECT * FROM job_list `);
+
+//     if (results.length > 0) {
+//       // Process each job entry
+//       await Promise.all(
+//         results.map(async (jobData) => {
+//           // Prepare additional content
+//           const additionalContent = {
+//             Advt_No: jobData.Advt_No,
+//             Online_Application_Start: jobData.Online_Application_Start,
+//             Registration_Last_Date: jobData.Registration_Last_Date,
+//             Fee_Payment_Last_Date: jobData.Fee_Payment_Last_Date,
+//             Exam_Date: jobData.Exam_Date,
+//             Admit_Card_Date: jobData.Admit_Card_Date,
+//             Result_Date: jobData.Result_Date,
+//             Answer_Key: jobData.Answer_Key,
+//             General_OBC_Application_Fee: jobData.General_OBC_Application_Fee,
+//             SC_ST_Application_Fee: jobData.SC_ST_Application_Fee,
+//             Fresh_Candidates_Below_Age_Limit: jobData.Fresh_Candidates_Below_Age_Limit,
+//             Max_age: jobData.Max_age,
+//             Total_Vacancy: jobData.Total_Vacancy,
+//             Eligibility_Details: jobData.Eligibility_Details,
+//             official_link: jobData.official_link,
+//             admitcard_link: jobData.admitcard_link,
+//             result_link: jobData.result_link,
+//             answerkey_link: jobData.answerkey_link,
+//             examdate_link: jobData.examdate_link,
+//             apply_link: jobData.apply_link,
+//             notification_link: jobData.notification_link,
+//           };
+
+//           // Create or Update Job in JobModel
+//           const job = await JobModel.create({
+//             title: jobData.Post_Title,
+//             description: jobData.Short_Information,
+//             slug: jobData.slug,
+//             meta_title: jobData.Post_Title,
+//             meta_description: jobData.Short_Information,
+//             canonical_url: jobData.official_link,
+//             date: jobData.Post_Update_Date,
+//             content: JSON.stringify(additionalContent), // Store additional fields as JSON
+//             admit_card_released: jobData.Admit_Card_Date ? "yes" : "no",
+//             answer_key_released: jobData.Answer_Key ? "yes" : "no",
+//             result_released: jobData.Result_Date ? "yes" : "no",
+//           });
+
+//           // Create Job Update Entries in JobUpdateModel
+//           if (jobData.Admit_Card_Date) {
+//             await JobUpdateModel.create({
+//               job_id: job.id,
+//               update_type: "admit_card",
+//               update_date: jobData.Admit_Card_Date,
+//               admitCardUrl: jobData.admitcard_link,
+//             });
+//           }
+//           if (jobData.Answer_Key) {
+//             await JobUpdateModel.create({
+//               job_id: job.id,
+//               update_type: "answer_key",
+//               update_date: jobData.Answer_Key,
+//               answerKeyUrl: jobData.answerkey_link,
+//             });
+//           }
+//           if (jobData.Result_Date) {
+//             await JobUpdateModel.create({
+//               job_id: job.id,
+//               update_type: "result",
+//               update_date: jobData.Result_Date,
+//               resultUrl: jobData.result_link,
+//             });
+//           }
+
+//           console.log(`Job created/updated with ID: ${job.id}`);
+//         })
+//       );
+
+//       res.json({ message: "Jobs processed successfully.", jobs: results });
+//     } else {
+//       res.status(404).json({ message: "Job not found for the given slug." });
+//     }
+//   } catch (error) {
+//     console.error("Error fetching job data:", error);
+//     res.status(500).json({ message: "Internal Server Error", error: error.message });
+//   }
+// });
+
+
+
 app.use("/category", categoryRoute);
 app.use("/subcategory", subCategoryRoute);
 app.use("/state", statesRoute);
@@ -100,7 +318,10 @@ app.use("/admission", admissonRouter);
 app.use("/upadmis", updateAdmissionRouter);
 app.use("/fileUpload", fileUploadRouter);
 app.use("/generalknow", generalKnowRouter);
-app.use("/generate",socialLinkRoutes);
+app.use("/generate",socialLinkRouter);
+app.use("/user",authRouter);
+
+
 
 //testserize route
 app.use("/testCat", testCategoryRouter);
@@ -115,6 +336,80 @@ app.use("/testSeries", testSeriesRouter);
 // });
 
 // Database sync
+
+// const fs = require("fs");
+
+// const mysql = require("mysql2");
+// const readline = require("readline");
+
+// (async () => {
+//   const sqlFilePath = path.join(__dirname, "database.sql"); // Path to your SQL file
+
+//   try {
+//     // Create MySQL connection
+//     const connection = mysql.createConnection({
+//       host: "localhost", // Replace with your database host
+//       user: "root",      // Replace with your database user
+//       password: "",      // Replace with your database password
+//       database: "random", // Replace with your database name
+//       // port: 27462,
+//     });
+
+//     console.log("Connected to the database.");
+
+    
+
+//     // Create a read stream for the SQL file
+//     const fileStream = fs.createReadStream(sqlFilePath, { encoding: "utf8" });
+//     const rl = readline.createInterface({
+//       input: fileStream,
+//       crlfDelay: Infinity, // Recognize all instances of CRLF as a single newline
+//     });
+
+//     let sqlQuery = "";
+
+//     // Read the file line by line
+//     for await (const line of rl) {
+//       // Skip comments and empty lines
+//       if (line.startsWith("--") || line.trim() === "") continue;
+
+//       // Accumulate the SQL query
+//       sqlQuery += line;
+
+//       // If the query ends with a semicolon, execute it
+//       if (line.trim().endsWith(";")) {
+//         await new Promise((resolve, reject) => {
+//           connection.query(sqlQuery, (err) => {
+//             if (err) {
+//               console.error(`Error executing query: ${sqlQuery}`, err);
+//               reject(err);
+//             } else {
+//               console.log("Executed:", sqlQuery);
+//               resolve();
+//             }
+//           });
+//         });
+
+//         // Reset the query accumulator
+//         sqlQuery = "";
+//       }
+//     }
+
+//     console.log("SQL file imported successfully.");
+
+//     // Close the connection
+//     connection.end();
+//   } catch (error) {
+//     console.error("Error:", error.message);
+//   }
+// })();
+
+
+
+
+
+
+
 sequelize
   .sync({ alter: true })
   .then(() => {

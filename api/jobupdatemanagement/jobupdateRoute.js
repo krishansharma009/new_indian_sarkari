@@ -21,5 +21,7 @@ router.get("/get/results", JobUpdateController.getResults);
 router.get("/admitCard/:id", JobUpdateController.getAdmitCardById);
 router.get("/answerKey/:id", JobUpdateController.getAnswerKeyById);
 router.get("/resultu/:id", JobUpdateController.getResultById);
+router.get("/slug/:slug", JobUpdateController.getUpdatedJobBySlug);
+
 
 module.exports = router;

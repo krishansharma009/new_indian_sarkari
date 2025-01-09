@@ -1,30 +1,31 @@
-// controllers/authController.js
-const REST_API = require('../../utils/curdHelper');
 const User = require('./user');
-const auth = require('../middleware/auth');
+const REST_API = require('../../utils/curdHelper');
+const auth = require('../../middleware/authMiddleware');
 
-const authController = {
-  register: async (req, res) => {
+
+const AuthController = {
+  signup: async (req, res) => {
     try {
-      const { username, email, password, fullName, phone, role } = req.body;
+      const user = await REST_API.create(User, req.body);
+      const token = auth.generateToken(user.id);
       
-      // Only superadmin can create admin users
-      if (role === 'admin' && req.user?.role !== 'superadmin') {
-        return res.status(403).json({ error: 'Insufficient permissions' });
-      }
+      // Set token in cookie
+      auth.setTokenCookie(res, token);
+      
+      // Remove password from response
+      const userResponse = user.toJSON();
+      delete userResponse.password;
 
-      const user = await REST_API.create(User, {
-        username,
-        email,
-        password,
-        fullName,
-        phone,
-        role: role || 'user'
+      res.status(201).json({
+        success: true,
+        data: userResponse,
+        token 
       });
-
-      res.status(201).json({ message: 'User registered successfully', user });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
     }
   },
 
@@ -34,86 +35,110 @@ const authController = {
       
       const user = await User.findOne({ where: { email } });
       if (!user || !(await user.comparePassword(password))) {
-        throw new Error('Invalid credentials');
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid email or password'
+        });
       }
 
-      if (!user.isActive) {
-        throw new Error('Account is deactivated');
-      }
-
-      const { accessToken, refreshToken } = auth.generateTokens(user);
+      const token = auth.generateToken(user.id);
       
-      // Update last login and refresh token
-      await REST_API.update(User, user.id, {
-        lastLogin: new Date(),
-        refreshToken
-      });
+      // Set token in cookie
+      auth.setTokenCookie(res, token);
+      
+      // Remove password from response
+      const userResponse = user.toJSON();
+      delete userResponse.password;
 
-      // Set cookies for web clients
-      if (req.headers['user-agent']?.toLowerCase().includes('mozilla')) {
-        res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: 900000 }); // 15 minutes
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 604800000 }); // 7 days
-      }
-
-      // Return tokens in response for mobile clients
-      res.json({
-        message: 'Login successful',
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          role: user.role
-        },
-        tokens: {
-          accessToken,
-          refreshToken
-        }
+      res.status(200).json({
+        success: true,
+        data: userResponse,
+        token // Also send token in response for header-based auth
       });
     } catch (error) {
-      res.status(401).json({ error: error.message });
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
     }
   },
 
   logout: async (req, res) => {
     try {
-      await REST_API.update(User, req.user.id, { refreshToken: null });
+      // Clear the JWT cookie
+      auth.clearTokenCookie(res);
       
-      res.clearCookie('accessToken');
-      res.clearCookie('refreshToken');
-      
-      res.json({ message: 'Logout successful' });
+      res.status(200).json({
+        success: true,
+        message: 'Logged out successfully'
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({
+        success: false,
+        message: 'Error during logout'
+      });
     }
   },
 
-  refreshToken: async (req, res) => {
+  getAllUsers: async (req, res) => {
     try {
-      const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
-      if (!refreshToken) {
-        throw new Error('No refresh token provided');
-      }
-
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-      const user = await User.findByPk(decoded.id);
-
-      if (!user || user.refreshToken !== refreshToken) {
-        throw new Error('Invalid refresh token');
-      }
-
-      const tokens = auth.generateTokens(user);
-      await REST_API.update(User, user.id, { refreshToken: tokens.refreshToken });
-
-      if (req.headers['user-agent']?.toLowerCase().includes('mozilla')) {
-        res.cookie('accessToken', tokens.accessToken, { httpOnly: true, maxAge: 900000 });
-        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, maxAge: 604800000 });
-      }
-
-      res.json({ tokens });
+      const result = await REST_API.getAll(User, req.query);
+      res.status(200).json({
+        success: true,
+        ...result
+      });
     } catch (error) {
-      res.status(401).json({ error: error.message });
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  getUserById: async (req, res) => {
+    try {
+      const result = await REST_API.getDataListByField(User, 'id', req.params.id);
+      res.status(200).json({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  updateUser: async (req, res) => {
+    try {
+      const result = await REST_API.update(User, req.params.id, req.body);
+      res.status(200).json({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+  },
+
+  deleteUser: async (req, res) => {
+    try {
+      await REST_API.delete(User, req.params.id);
+      res.status(200).json({
+        success: true,
+        message: 'User deleted successfully'
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message
+      });
     }
   }
 };
 
-module.exports = authController;
+module.exports = AuthController;

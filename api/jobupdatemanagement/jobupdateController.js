@@ -293,6 +293,39 @@ const JobUpdateController = {
       res.status(500).json({ error: error.message });
     }
   },
+
+
+
+
+    getUpdatedJobBySlug: async (req, res) => {
+    try {
+      const result = await REST_API.getDataListByField(
+        JobUpdate,
+        "slug",
+        req.params.slug,
+        {
+          include: [
+            { model: Category },
+            { model: Depertment },
+            { model: State },
+            { model: Subcategory },
+          ],
+          order: [["created_at", "DESC"]],
+        }
+      );
+
+      if (!result.length) {
+        return res.status(404).json({ error: "Updated Job not found" });
+      }
+
+      res.json(result[0]);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+
+
 };
 
 module.exports = JobUpdateController;
