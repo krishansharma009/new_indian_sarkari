@@ -5,3 +5,6 @@ log
 logs
 app.log
 error.log
+uploads/
+.uploads
+
