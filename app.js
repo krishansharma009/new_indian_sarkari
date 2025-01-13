@@ -3,14 +3,14 @@ const cors = require("cors");
 const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
-const { Sequelize } = require('sequelize');
+const { Sequelize } = require("sequelize");
 const path = require("path");
 const sequelize = require("./config/datasource-db");
 const logger = require("./middleware/logger");
 const rateLimiter = require("./middleware/rateLimiter");
 const swagger = require("./config/swagger");
 const swaggerUi = require("swagger-ui-express");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 
 const errorHandler = require("./middleware/errorHandler");
 
@@ -27,7 +27,7 @@ const admissonRouter = require("./api/goverment_admissilns/adissionRoute");
 const updateAdmissionRouter = require("./api/admissionUpdate/updateAdmissionRout");
 const fileUploadRouter = require("./api/studyMeterial/fileUpload.routes");
 const generalKnowRouter = require("./api/studyMeterial/generalKnowledge/generalknowRoute");
-const socialLinkRouter  = require("./api/SocialLinksManagements/SocialLinkRoutes");
+const socialLinkRouter = require("./api/SocialLinksManagements/SocialLinkRoutes");
 const authRouter = require("./api/userManagement/authRoutes");
 const storyRouter = require("./api/WebStoriesManagement/storyRoute");
 const storySlidesRouter = require("./api/WebStoriesSlideManagement/storySlidesRoute");
@@ -49,8 +49,8 @@ app.use(helmet());
 app.use(rateLimiter);
 app.use(morgan("dev"));
 app.use(errorHandler);
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(compression());
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -92,11 +92,6 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something broke!");
 });
 
-
-
-
-
-
 // API Route to fetch job data
 // app.get('/api/jobs', async (req, res) => {
 //   try {
@@ -111,16 +106,11 @@ app.use((err, req, res, next) => {
 //   }
 // });
 
-
-
-
-
-
 // app.get('/api/jobs/:slug', async (req, res) => {
-//   const slug = req.params.slug; 
+//   const slug = req.params.slug;
 //   try {
 //     const [results, metadata] = await sequelize.query('select * FROM job_list WHERE slug = ?',{ replacements: [slug] });
-    
+
 //     if (results.length > 0) {
 //       res.json(results);
 //     } else {
@@ -132,10 +122,8 @@ app.use((err, req, res, next) => {
 //   }
 // });
 
-
-
 //  app.get('/api/jobs/:slug', async (req, res) => {
-//   const slug = req.params.slug; 
+//   const slug = req.params.slug;
 //   const JobModel = require("./api/jobmanagement/job");
 //   const AdmitModel = require("./api/jobupdatemanagement/job-update");
 //   try {
@@ -185,7 +173,6 @@ app.use((err, req, res, next) => {
 
 //         console.log(job.id);
 
-
 //       })
 //     );
 //     }
@@ -200,24 +187,15 @@ app.use((err, req, res, next) => {
 //   }
 // });
 
-
-
-
-
-
 // Routes
 // app.use("/", publicRoutes);
 // app.use("/jobs", jobsRoutes);
 // app.use("/admin", adminRoutes);
 
-
-
-
-
 // const JobModel = require("./api/jobmanagement/job");
 // const JobUpdateModel = require("./api/jobupdatemanagement/job-update");
 
-// app.get('/api/jobsgk/', async (req, res) => { 
+// app.get('/api/jobsgk/', async (req, res) => {
 //   const slug = req.params.slug;
 
 //   try {
@@ -308,8 +286,6 @@ app.use((err, req, res, next) => {
 //   }
 // });
 
-
-
 app.use("/category", categoryRoute);
 app.use("/subcategory", subCategoryRoute);
 app.use("/state", statesRoute);
@@ -321,13 +297,11 @@ app.use("/admission", admissonRouter);
 app.use("/upadmis", updateAdmissionRouter);
 app.use("/fileUpload", fileUploadRouter);
 app.use("/generalknow", generalKnowRouter);
-app.use("/generate",socialLinkRouter);
-app.use("/user",authRouter);
+app.use("/generate", socialLinkRouter);
+app.use("/user", authRouter);
 app.use("/story", storyRouter);
 app.use("/slides", storySlidesRouter);
 app.use("/author", authorRouter);
-
-
 
 //testserize route
 app.use("/testCat", testCategoryRouter);
@@ -362,8 +336,6 @@ app.use("/testSeries", testSeriesRouter);
 //     });
 
 //     console.log("Connected to the database.");
-
-    
 
 //     // Create a read stream for the SQL file
 //     const fileStream = fs.createReadStream(sqlFilePath, { encoding: "utf8" });
@@ -409,12 +381,6 @@ app.use("/testSeries", testSeriesRouter);
 //     console.error("Error:", error.message);
 //   }
 // })();
-
-
-
-
-
-
 
 sequelize
   .sync({ alter: true })
