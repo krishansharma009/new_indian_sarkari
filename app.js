@@ -29,6 +29,9 @@ const fileUploadRouter = require("./api/studyMeterial/fileUpload.routes");
 const generalKnowRouter = require("./api/studyMeterial/generalKnowledge/generalknowRoute");
 const socialLinkRouter  = require("./api/SocialLinksManagements/SocialLinkRoutes");
 const authRouter = require("./api/userManagement/authRoutes");
+const storyRouter = require("./api/WebStoriesManagement/storyRoute");
+const storySlidesRouter = require("./api/WebStoriesSlideManagement/storySlidesRoute");
+const authorRouter = require("./api/authorManagement/authorRoute");
 
 //testserize management
 
@@ -320,6 +323,9 @@ app.use("/fileUpload", fileUploadRouter);
 app.use("/generalknow", generalKnowRouter);
 app.use("/generate",socialLinkRouter);
 app.use("/user",authRouter);
+app.use("/story", storyRouter);
+app.use("/slides", storySlidesRouter);
+app.use("/author", authorRouter);
 
 
 
