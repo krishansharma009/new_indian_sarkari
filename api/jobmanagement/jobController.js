@@ -117,8 +117,8 @@ const JobController = {
       // Use generateUniqueSlug for both manual and automatic slugs
       const slug = await generateUniqueSlug(
         Job,
-        req.body.slug || req.body.title, // Use provided slug or fall back to title
-        categorydata.name
+        req.body.slug || req.body.title // Use provided slug or fall back to title
+        // categorydata.name
       );
 
       const jobData = { ...req.body, slug };

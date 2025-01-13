@@ -8,7 +8,7 @@ const generateUniqueSlug = async (model, title, name, existingId = null) => {
   const year = date.getFullYear();
 
   // Create base slug combining title, category, month, and year
-  let baseSlug = slugify(`${title}-${name}-${month}-${year}`, {
+  let baseSlug = slugify(`${title}-${name}`, {
     lower: true,
     strict: true,
     remove: /[*+~.()'"!:@]/g,
