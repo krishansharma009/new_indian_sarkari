@@ -105,7 +105,9 @@ const JobController = {
 
   // Modified create method to handle manual slug
   createJob: async (req, res) => {
-    try {
+  try {
+    // Check for category existence (optional if not needed anymore)
+    if (req.body.category_id) {
       const categorydata = await Category.findOne({
         where: { id: req.body.category_id },
       });
@@ -113,21 +115,22 @@ const JobController = {
       if (!categorydata) {
         return res.status(400).json({ error: "Category not found" });
       }
-
-      // Use generateUniqueSlug for both manual and automatic slugs
-      const slug = await generateUniqueSlug(
-        Job,
-        req.body.slug || req.body.title // Use provided slug or fall back to title
-        // categorydata.name
-      );
-
-      const jobData = { ...req.body, slug };
-      const result = await REST_API.create(Job, jobData);
-      res.status(201).json(result);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
     }
-  },
+
+    // Use generateUniqueSlug for both manual and automatic slugs
+    const slug = await generateUniqueSlug(
+      Job,
+      req.body.slug || req.body.title // Manual slug takes priority; fallback to title
+    );
+
+    const jobData = { ...req.body, slug };
+    const result = await REST_API.create(Job, jobData);
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+},
+
 
   // Modified update method to handle manual slug
   updateJob: async (req, res) => {

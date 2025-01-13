@@ -1,14 +1,9 @@
 const slugify = require("slugify");
 const { Op } = require("sequelize");
 
-const generateUniqueSlug = async (model, title, name, existingId = null) => {
-  // Get current date for month and year
-  const date = new Date();
-  const month = date.toLocaleString("default", { month: "short" });
-  const year = date.getFullYear();
-
-  // Create base slug combining title, category, month, and year
-  let baseSlug = slugify(`${title}-${name}`, {
+const generateUniqueSlug = async (model, titleOrSlug, existingId = null) => {
+  // Generate slug from the titleOrSlug (manual or fallback to title)
+  let baseSlug = slugify(titleOrSlug, {
     lower: true,
     strict: true,
     remove: /[*+~.()'"!:@]/g,
@@ -29,7 +24,7 @@ const generateUniqueSlug = async (model, title, name, existingId = null) => {
     const existingRecord = await model.findOne({ where: whereCondition });
 
     if (!existingRecord) {
-      return uniqueSlug;
+      return uniqueSlug; // Return the first available unique slug
     }
 
     uniqueSlug = `${baseSlug}-${counter}`;
